@@ -38,7 +38,7 @@ export default function ProductDetailPage() {
     async function fetchProduct() {
       try {
         setLoading(true);
-        const res = await fetch(`https://apisahumerios.onrender.com/productos/listar`, { cache: 'no-store' });
+        const res = await fetch(`https://apisahumerios.onrender.com/productos/listado`, { cache: 'no-store' });
         const products = await res.json();
         const foundProduct = products.find((p: Product) => p.id.toString() === params.id);
         setProduct(foundProduct || null);

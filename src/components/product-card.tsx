@@ -8,6 +8,7 @@ import { useToast } from '@/hooks/use-toast';
 import { ShoppingCart, Eye } from 'lucide-react';
 import Link from 'next/link';
 import { Badge } from './ui/badge';
+import React from 'react';
 
 interface ProductCardProps {
   product: Product;
@@ -15,8 +16,9 @@ interface ProductCardProps {
 
 // Helper to check if an offer is active
 const getActiveOffer = (product: Product) => {
+  if (!product.ofertas) return undefined;
   const now = new Date();
-  return product.ofertas?.find(offer => {
+  return product.ofertas.find(offer => {
     const startDate = new Date(offer.fechaInicio);
     const endDate = new Date(offer.fechaFin);
     return offer.estado && now >= startDate && now <= endDate;
@@ -27,7 +29,7 @@ export function ProductCard({ product }: ProductCardProps) {
   const { addToCart } = useCart();
   const { toast } = useToast();
 
-  const activeOffer = getActiveOffer(product);
+  const activeOffer = React.useMemo(() => getActiveOffer(product), [product]);
   const displayPrice = activeOffer ? activeOffer.precio : product.precio;
 
   const handleAddToCart = () => {

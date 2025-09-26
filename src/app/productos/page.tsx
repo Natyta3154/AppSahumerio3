@@ -23,7 +23,7 @@ function ProductList() {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 20000); // 20 seconds timeout
         
-        const res = await fetch('https://apisahumerios.onrender.com/productos/listar', { 
+        const res = await fetch('https://apisahumerios.onrender.com/productos/listado', { 
           cache: 'no-store',
           signal: controller.signal
         });

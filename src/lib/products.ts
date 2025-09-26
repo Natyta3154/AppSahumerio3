@@ -29,7 +29,7 @@ export type Product = {
 
 export async function getProducts(): Promise<Product[]> {
   try {
-    const res = await fetch('https://apisahumerios.onrender.com/productos/listar', {
+    const res = await fetch('https://apisahumerios.onrender.com/productos/listado', {
       cache: 'no-store'
     });
     if (!res.ok) {
