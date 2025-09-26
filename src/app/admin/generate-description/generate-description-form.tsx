@@ -23,12 +23,12 @@ function SubmitButton() {
       {pending ? (
         <>
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          Generating...
+          Generando...
         </>
       ) : (
         <>
           <Sparkles className="mr-2 h-4 w-4" />
-          Generate Description
+          Generar Descripción
         </>
       )}
     </Button>
@@ -43,33 +43,33 @@ export default function GenerateDescriptionForm() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <Card>
           <CardHeader>
-            <CardTitle>Product Details</CardTitle>
+            <CardTitle>Detalles del Producto</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="productName">Product Name</Label>
-              <Input id="productName" name="productName" placeholder="e.g., Calming Lavender Incense" required />
+              <Label htmlFor="productName">Nombre del Producto</Label>
+              <Input id="productName" name="productName" placeholder="ej., Incienso Relajante de Lavanda" required />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="productCategory">Product Category</Label>
-              <Input id="productCategory" name="productCategory" placeholder="e.g., Incense Sticks" required />
+              <Label htmlFor="productCategory">Categoría del Producto</Label>
+              <Input id="productCategory" name="productCategory" placeholder="ej., Varitas de Incienso" required />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="keyFeatures">Key Features (comma-separated)</Label>
-              <Textarea id="keyFeatures" name="keyFeatures" placeholder="e.g., Hand-rolled, All-natural ingredients, Long-lasting aroma" required />
+              <Label htmlFor="keyFeatures">Características Clave (separadas por comas)</Label>
+              <Textarea id="keyFeatures" name="keyFeatures" placeholder="ej., Hecho a mano, Ingredientes naturales, Aroma duradero" required />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="tone">Tone of Voice</Label>
-              <Select name="tone" defaultValue="Informative">
+              <Label htmlFor="tone">Tono de Voz</Label>
+              <Select name="tone" defaultValue="Informativo">
                 <SelectTrigger>
-                  <SelectValue placeholder="Select a tone" />
+                  <SelectValue placeholder="Selecciona un tono" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Informative">Informative</SelectItem>
-                  <SelectItem value="Persuasive">Persuasive</SelectItem>
-                  <SelectItem value="Humorous">Humorous</SelectItem>
-                  <SelectItem value="Spiritual">Spiritual</SelectItem>
-                  <SelectItem value="Luxurious">Luxurious</SelectItem>
+                  <SelectItem value="Informativo">Informativo</SelectItem>
+                  <SelectItem value="Persuasivo">Persuasivo</SelectItem>
+                  <SelectItem value="Humorístico">Humorístico</SelectItem>
+                  <SelectItem value="Espiritual">Espiritual</SelectItem>
+                  <SelectItem value="Lujoso">Lujoso</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -82,14 +82,14 @@ export default function GenerateDescriptionForm() {
         <div className="space-y-4">
           <Card className="flex-grow flex flex-col">
             <CardHeader>
-              <CardTitle>Generated Description</CardTitle>
+              <CardTitle>Descripción Generada</CardTitle>
             </CardHeader>
             <CardContent className="flex-grow">
               <Textarea 
                 readOnly 
                 value={state.description ?? ''} 
                 className="h-full min-h-[200px] resize-none"
-                placeholder="AI-generated description will appear here..." 
+                placeholder="La descripción generada por IA aparecerá aquí..." 
               />
             </CardContent>
           </Card>

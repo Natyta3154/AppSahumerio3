@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import { ShoppingBag, User, Wind } from 'lucide-react';
 import { Button } from './ui/button';
-import { useCart } from '@/hooks/use-cart';
+import { useCart } from '@/hooks/use-cart.tsx';
 import { CartSheet } from './cart-sheet';
 
 export function Header() {
@@ -16,9 +16,10 @@ export function Header() {
         </Link>
 
         <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
-          <Link href="/" className="text-foreground/80 hover:text-primary transition-colors">Home</Link>
-          <Link href="/admin" className="text-foreground/80 hover:text-primary transition-colors">Admin</Link>
-          <Link href="/profile" className="text-foreground/80 hover:text-primary transition-colors">Profile</Link>
+          <Link href="/" className="text-foreground/80 hover:text-primary transition-colors">Inicio</Link>
+          <Link href="/quienes-somos" className="text-foreground/80 hover:text-primary transition-colors">Quiénes Somos</Link>
+          <Link href="/blog" className="text-foreground/80 hover:text-primary transition-colors">Blog</Link>
+          <Link href="/contacto" className="text-foreground/80 hover:text-primary transition-colors">Contacto</Link>
         </nav>
 
         <div className="flex items-center gap-4">

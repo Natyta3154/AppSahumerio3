@@ -47,6 +47,30 @@
       "description": "A ceramic mug with a zen-themed print.",
       "imageUrl": "https://images.unsplash.com/photo-1655174570909-48d061c2e882?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxjZXJhbWljJTIwbXVnfGVufDB8fHx8MTc1ODgzMjk3MHww&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "ceramic mug"
+    },
+    {
+      "id": "hero-background",
+      "description": "A serene background for the hero section.",
+      "imageUrl": "https://images.unsplash.com/photo-1541580597144-80b628456606?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "imageHint": "serene background"
+    },
+    {
+      "id": "about-us",
+      "description": "An image representing the company's story or workshop.",
+      "imageUrl": "https://images.unsplash.com/photo-1594434222164-8c08a2031a0e?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "imageHint": "incense workshop"
+    },
+    {
+      "id": "blog-sandalwood",
+      "description": "Sandalwood incense burning for a blog post.",
+      "imageUrl": "https://images.unsplash.com/photo-1621282121542-491326c93026?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "imageHint": "sandalwood meditation"
+    },
+    {
+      "id": "blog-ritual",
+      "description": "A morning ritual setup with tea and incense.",
+      "imageUrl": "https://images.unsplash.com/photo-1565350320641-5a0a38b30962?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "imageHint": "morning ritual"
     }
   ]
 }

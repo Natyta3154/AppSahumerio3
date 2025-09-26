@@ -8,7 +8,7 @@ import {
   SheetFooter,
 } from '@/components/ui/sheet';
 import { Button } from './ui/button';
-import { useCart } from '@/hooks/use-cart';
+import { useCart } from '@/hooks/use-cart.tsx';
 import Image from 'next/image';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Minus, Plus, Trash2, ShoppingCart } from 'lucide-react';
@@ -21,7 +21,7 @@ export function CartSheet({ children }: { children: React.ReactNode }) {
       <SheetTrigger asChild>{children}</SheetTrigger>
       <SheetContent className="flex flex-col">
         <SheetHeader>
-          <SheetTitle>Your Cart ({totalItems})</SheetTitle>
+          <SheetTitle>Tu Carrito ({totalItems})</SheetTitle>
         </SheetHeader>
         {cart.length > 0 ? (
           <>
@@ -81,7 +81,7 @@ export function CartSheet({ children }: { children: React.ReactNode }) {
                   <span>${totalPrice.toFixed(2)}</span>
                 </div>
                 <Button className="w-full" size="lg">
-                  Checkout with MercadoPago
+                  Pagar con MercadoPago
                 </Button>
               </div>
             </SheetFooter>
@@ -89,8 +89,8 @@ export function CartSheet({ children }: { children: React.ReactNode }) {
         ) : (
           <div className="flex-1 flex flex-col items-center justify-center text-center">
             <ShoppingCart className="h-20 w-20 text-muted-foreground/50 mb-4" />
-            <h3 className="text-xl font-semibold">Your cart is empty</h3>
-            <p className="text-muted-foreground">Add some items to get started.</p>
+            <h3 className="text-xl font-semibold">Tu carrito está vacío</h3>
+            <p className="text-muted-foreground">Añade algunos productos para empezar.</p>
           </div>
         )}
       </SheetContent>
