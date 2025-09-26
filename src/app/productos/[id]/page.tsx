@@ -4,7 +4,7 @@ import { useParams } from 'next/navigation';
 import { type Product, type ProductVariant } from '@/lib/products';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { useCart } from '@/hooks/use-cart';
+import { useCart } from '@/hooks/use-cart.tsx';
 import { useToast } from '@/hooks/use-toast';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
@@ -15,8 +15,9 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 // Helper to check if an offer is active
 const getActiveOffer = (product: Product) => {
+  if (!product.ofertas) return undefined;
   const now = new Date();
-  return product.ofertas?.find(offer => {
+  return product.ofertas.find(offer => {
     const startDate = new Date(offer.fechaInicio);
     const endDate = new Date(offer.fechaFin);
     return offer.estado && now >= startDate && now <= endDate;
@@ -37,7 +38,7 @@ export default function ProductDetailPage() {
     async function fetchProduct() {
       try {
         setLoading(true);
-        const res = await fetch(`https://apisahumerios.onrender.com/productos/listar`);
+        const res = await fetch(`https://apisahumerios.onrender.com/productos/listar`, { cache: 'no-store' });
         const products = await res.json();
         const foundProduct = products.find((p: Product) => p.id.toString() === params.id);
         setProduct(foundProduct || null);

@@ -30,7 +30,7 @@ export type Product = {
 export async function getProducts(): Promise<Product[]> {
   try {
     const res = await fetch('https://apisahumerios.onrender.com/productos/listar', {
-      next: { revalidate: 3600 } // Revalidate every hour
+      cache: 'no-store'
     });
     if (!res.ok) {
       throw new Error('Failed to fetch products');

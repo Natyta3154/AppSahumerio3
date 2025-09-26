@@ -19,7 +19,7 @@ export default function ProductosPage() {
     async function fetchProducts() {
       try {
         setLoading(true);
-        const res = await fetch('https://apisahumerios.onrender.com/productos/listar');
+        const res = await fetch('https://apisahumerios.onrender.com/productos/listar', { cache: 'no-store' });
         if (!res.ok) {
           throw new Error('Failed to fetch');
         }
