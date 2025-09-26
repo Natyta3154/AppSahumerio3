@@ -1,0 +1,73 @@
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { products } from "@/lib/products";
+import { Pencil, PlusCircle, Trash2 } from "lucide-react";
+import Image from "next/image";
+import { PlaceHolderImages } from "@/lib/placeholder-images";
+
+export default function AdminProductsPage() {
+  return (
+    <div>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold font-headline">Manage Products</h1>
+        <Button>
+          <PlusCircle className="mr-2 h-4 w-4" />
+          Add Product
+        </Button>
+      </div>
+      
+      <Card>
+        <CardHeader>
+          <CardTitle>Product List</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-[80px]">Image</TableHead>
+                <TableHead>Name</TableHead>
+                <TableHead>Category</TableHead>
+                <TableHead>Price</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {products.map((product) => {
+                 const placeholder = PlaceHolderImages.find((p) => p.id === product.imageId);
+                 return (
+                  <TableRow key={product.id}>
+                    <TableCell>
+                      {placeholder && (
+                        <div className="relative h-12 w-12 rounded-md overflow-hidden">
+                           <Image
+                            src={placeholder.imageUrl}
+                            alt={product.name}
+                            fill
+                            className="object-cover"
+                            data-ai-hint={placeholder.imageHint}
+                          />
+                        </div>
+                      )}
+                    </TableCell>
+                    <TableCell className="font-medium">{product.name}</TableCell>
+                    <TableCell>{product.category}</TableCell>
+                    <TableCell>${product.price.toFixed(2)}</TableCell>
+                    <TableCell className="text-right">
+                      <Button variant="ghost" size="icon" className="mr-2">
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                      <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive">
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                 )
+              })}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}

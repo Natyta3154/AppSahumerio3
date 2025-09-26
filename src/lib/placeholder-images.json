@@ -1,3 +1,52 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "incense-lavender",
+      "description": "Lavender incense sticks in a bundle.",
+      "imageUrl": "https://images.unsplash.com/photo-1717749714330-914f3353208e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxsYXZlbmRlciUyMGluY2Vuc2V8ZW58MHx8fHwxNzU4ODYzMjk1fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "lavender incense"
+    },
+    {
+      "id": "incense-sandalwood",
+      "description": "Sandalwood incense sticks.",
+      "imageUrl": "https://images.unsplash.com/photo-1486056997767-09578eee7de1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxzYW5kYWx3b29kJTIwaW5jZW5zZXxlbnwwfHx8fDE3NTg4MTUwNTh8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "sandalwood incense"
+    },
+    {
+      "id": "incense-rose",
+      "description": "Rose scented incense sticks.",
+      "imageUrl": "https://images.unsplash.com/photo-1616468484424-84f6bf62d222?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxyb3NlJTIwaW5jZW5zZXxlbnwwfHx8fDE3NTg4NjMyOTV8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "rose incense"
+    },
+    {
+      "id": "incense-frankincense",
+      "description": "Frankincense incense sticks.",
+      "imageUrl": "https://images.unsplash.com/photo-1628588332928-f50a5a7c24ed?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8ZnJhbmtpbmNlbnNlJTIwaW5jZW5zZXxlbnwwfHx8fDE3NTg4NjMyOTV8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "frankincense incense"
+    },
+    {
+      "id": "burner-lotus",
+      "description": "A lotus-shaped incense burner.",
+      "imageUrl": "https://images.unsplash.com/photo-1662572669516-858e73936ca3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxsb3R1cyUyMGJ1cm5lcnxlbnwwfHx8fDE3NTg4NjMyOTV8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "lotus burner"
+    },
+    {
+      "id": "burner-waterfall",
+      "description": "A backflow incense burner creating a waterfall smoke effect.",
+      "imageUrl": "https://images.unsplash.com/photo-1657089342023-13325d7bfe10?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHx3YXRlcmZhbGwlMjBidXJuZXJ8ZW58MHx8fHwxNzU4ODYzMjk1fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "waterfall burner"
+    },
+    {
+      "id": "merch-tote",
+      "description": "A canvas tote bag with a spiritual design.",
+      "imageUrl": "https://images.unsplash.com/photo-1542957057-debadce4ce81?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxjYW52YXMlMjB0b3RlfGVufDB8fHx8MTc1ODg1NDYyOHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "canvas tote"
+    },
+    {
+      "id": "merch-mug",
+      "description": "A ceramic mug with a zen-themed print.",
+      "imageUrl": "https://images.unsplash.com/photo-1655174570909-48d061c2e882?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxjZXJhbWljJTIwbXVnfGVufDB8fHx8MTc1ODgzMjk3MHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "ceramic mug"
+    }
+  ]
 }
