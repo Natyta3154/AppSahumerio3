@@ -1,5 +1,12 @@
 import { PlaceHolderImages } from './placeholder-images';
 
+export type ProductVariant = {
+  id: string;
+  name: string;
+  priceModifier?: number;
+  imageId: string;
+};
+
 export type Product = {
   id: string;
   name: string;
@@ -7,81 +14,52 @@ export type Product = {
   price: number;
   imageId: string;
   category: 'Incense' | 'Burner' | 'Merchandise';
+  variants?: ProductVariant[];
 };
 
-function getImageUrl(id: string) {
-  return PlaceHolderImages.find((img) => img.id === id)?.imageUrl || 'https://placehold.co/400x400';
-}
-function getImageHint(id: string) {
-    return PlaceHolderImages.find((img) => img.id === id)?.imageHint || 'product';
-}
-
-
-export const incenseSticks: Product[] = [
+export const products: Product[] = [
   {
     id: '1',
-    name: 'Lavender Bloom Incense',
-    description: 'Calming lavender incense to soothe your mind and soul.',
+    name: 'Varitas de Incienso Artesanal',
+    description: 'Calma tu mente y alma con nuestras varitas de incienso hechas a mano. Elige tu fragancia favorita para crear el ambiente perfecto.',
     price: 8.99,
-    imageId: 'incense-lavender',
+    imageId: 'incense-lavender', // Default image
     category: 'Incense',
+    variants: [
+      { id: 'v1', name: 'Flor de Lavanda', imageId: 'incense-lavender' },
+      { id: 'v2', name: 'Sándalo Sagrado', priceModifier: 1.00, imageId: 'incense-sandalwood' },
+      { id: 'v3', name: 'Rosa Mística', imageId: 'incense-rose' },
+      { id: 'v4', name: 'Incienso Dorado', priceModifier: 2.00, imageId: 'incense-frankincense' },
+    ],
   },
-  {
-    id: '2',
-    name: 'Sacred Sandalwood Sticks',
-    description: 'Classic sandalwood for meditation and spiritual clarity.',
-    price: 9.99,
-    imageId: 'incense-sandalwood',
-    category: 'Incense',
-  },
-  {
-    id: '3',
-    name: 'Mystic Rose Incense',
-    description: 'A fragrant rose aroma to open your heart and inspire love.',
-    price: 8.99,
-    imageId: 'incense-rose',
-    category: 'Incense',
-  },
-  {
-    id: '4',
-    name: 'Golden Frankincense',
-    description: 'Purifying frankincense to cleanse your space and elevate your spirit.',
-    price: 10.99,
-    imageId: 'incense-frankincense',
-    category: 'Incense',
-  },
-];
-
-export const products: Product[] = [
-  ...incenseSticks,
   {
     id: '5',
-    name: 'Lotus Blossom Burner',
-    description: 'An elegant ceramic lotus burner, perfect for stick incense.',
+    name: 'Quemador Flor de Loto',
+    description: 'Un elegante quemador de cerámica con forma de loto, perfecto para incienso en varita.',
     price: 19.99,
     imageId: 'burner-lotus',
     category: 'Burner',
   },
   {
     id: '6',
-    name: 'Misty Mountain Backflow Burner',
-    description: 'Watch smoke gently flow like a waterfall with this stunning backflow burner.',
+    name: 'Quemador de Reflujo Montaña Brumosa',
+    description: 'Observa cómo el humo fluye suavemente como una cascada con este impresionante quemador de reflujo.',
     price: 29.99,
     imageId: 'burner-waterfall',
     category: 'Burner',
   },
   {
     id: '7',
-    name: 'Aura Tote Bag',
-    description: 'Carry your essentials in this stylish and spiritual canvas tote bag.',
+    name: 'Bolso de Tela "Aura"',
+    description: 'Lleva tus esenciales en este elegante y espiritual bolso de tela.',
     price: 24.99,
     imageId: 'merch-tote',
     category: 'Merchandise',
   },
   {
     id: '8',
-    name: 'Zen Moment Mug',
-    description: 'Start your day with a moment of peace with our ceramic zen mug.',
+    name: 'Taza "Momento Zen"',
+    description: 'Comienza tu día con un momento de paz con nuestra taza de cerámica zen.',
     price: 15.99,
     imageId: 'merch-mug',
     category: 'Merchandise',
