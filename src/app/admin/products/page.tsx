@@ -1,15 +1,16 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { products } from "@/lib/products";
+import { getProducts, type Product } from "@/lib/products";
 import { Pencil, PlusCircle, Trash2 } from "lucide-react";
 import Image from "next/image";
-import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { AddProductForm } from "./add-product-form";
 import { Badge } from "@/components/ui/badge";
 
-export default function AdminProductsPage() {
+export default async function AdminProductsPage() {
+  const products: Product[] = await getProducts();
+
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
@@ -45,32 +46,31 @@ export default function AdminProductsPage() {
                 <TableHead>Nombre</TableHead>
                 <TableHead>Categoría</TableHead>
                 <TableHead>Precio</TableHead>
+                <TableHead>Stock</TableHead>
                 <TableHead className="text-right">Acciones</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {products.map((product) => {
-                 const placeholder = PlaceHolderImages.find((p) => p.id === product.imageId);
                  return (
                   <TableRow key={product.id}>
                     <TableCell>
-                      {placeholder && (
-                        <div className="relative h-12 w-12 rounded-md overflow-hidden">
-                           <Image
-                            src={placeholder.imageUrl}
-                            alt={product.name}
-                            fill
-                            className="object-cover"
-                            data-ai-hint={placeholder.imageHint}
-                          />
-                        </div>
-                      )}
+                      <div className="relative h-12 w-12 rounded-md overflow-hidden">
+                         <Image
+                          src={product.imagenUrl}
+                          alt={product.nombre}
+                          fill
+                          className="object-cover"
+                          unoptimized
+                        />
+                      </div>
                     </TableCell>
-                    <TableCell className="font-medium">{product.name}</TableCell>
+                    <TableCell className="font-medium">{product.nombre}</TableCell>
                     <TableCell>
-                      <Badge variant="secondary">{product.category}</Badge>
+                      <Badge variant="secondary">{product.categoriaNombre}</Badge>
                     </TableCell>
-                    <TableCell>${product.price.toFixed(2)}</TableCell>
+                    <TableCell>${product.precio.toFixed(2)}</TableCell>
+                    <TableCell>{product.stock}</TableCell>
                     <TableCell className="text-right">
                       <Button variant="ghost" size="icon" className="mr-2">
                         <Pencil className="h-4 w-4" />
