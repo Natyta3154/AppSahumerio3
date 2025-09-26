@@ -1,5 +1,5 @@
 import { ProductCard } from '@/components/product-card';
-import { products } from '@/lib/products';
+import { getProducts } from '@/lib/products';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
@@ -32,11 +32,13 @@ const blogPosts = [
 ];
 
 
-export default function Home() {
+export default async function Home() {
   const heroImage = PlaceHolderImages.find(p => p.id === 'hero-background');
   
-  const featuredProducts = [...products].sort((a, b) => b.price - a.price).slice(0, 4);
-  const offerProducts = products.slice(4, 8);
+  const allProducts = await getProducts();
+  
+  const featuredProducts = [...allProducts].sort((a, b) => b.precio - a.precio).slice(0, 4);
+  const offerProducts = allProducts.filter(p => p.ofertas && p.ofertas.some(o => o.estado)).slice(0, 4);
 
   return (
     <div className="dark">
@@ -77,14 +79,16 @@ export default function Home() {
           </div>
         </section>
         
-        <section className="mb-16 bg-secondary/30 rounded-lg p-8">
-          <h2 className="text-3xl font-headline font-bold mb-8 text-center border-b-2 border-primary/20 pb-4">Ofertas Especiales</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-            {offerProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
-        </section>
+        {offerProducts.length > 0 && (
+          <section className="mb-16 bg-secondary/30 rounded-lg p-8">
+            <h2 className="text-3xl font-headline font-bold mb-8 text-center border-b-2 border-primary/20 pb-4">Ofertas Especiales</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+              {offerProducts.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+          </section>
+        )}
 
         <section>
           <div className="flex justify-between items-center mb-8 border-b-2 border-primary/20 pb-4">

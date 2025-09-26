@@ -1,49 +1,74 @@
 'use client';
 
-import { useState, useMemo } from 'react';
-import { products } from '@/lib/products';
+import { useState, useMemo, useEffect } from 'react';
+import { type Product } from '@/lib/products';
 import { ProductCard } from '@/components/product-card';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Search } from 'lucide-react';
-
-const categories = ['All', ...Array.from(new Set(products.map(p => p.category)))];
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function ProductosPage() {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [category, setCategory] = useState('All');
   const [sortOrder, setSortOrder] = useState('price-desc');
+
+  useEffect(() => {
+    async function fetchProducts() {
+      try {
+        setLoading(true);
+        const res = await fetch('https://apisahumerios.onrender.com/productos/listar');
+        if (!res.ok) {
+          throw new Error('Failed to fetch');
+        }
+        const data = await res.json();
+        setProducts(data);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchProducts();
+  }, []);
+
+  const categories = useMemo(() => {
+    if (products.length === 0) return [];
+    return ['All', ...Array.from(new Set(products.map(p => p.categoriaNombre)))];
+  }, [products]);
 
   const filteredAndSortedProducts = useMemo(() => {
     let filtered = products;
 
     if (category !== 'All') {
-      filtered = filtered.filter(p => p.category === category);
+      filtered = filtered.filter(p => p.categoriaNombre === category);
     }
 
     if (searchTerm) {
       filtered = filtered.filter(p =>
-        p.name.toLowerCase().includes(searchTerm.toLowerCase())
+        p.nombre.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
     const sorted = [...filtered].sort((a, b) => {
       switch (sortOrder) {
         case 'price-asc':
-          return a.price - b.price;
+          return a.precio - b.precio;
         case 'price-desc':
-          return b.price - a.price;
+          return b.precio - a.precio;
         case 'name-asc':
-          return a.name.localeCompare(b.name);
+          return a.nombre.localeCompare(b.nombre);
         case 'name-desc':
-            return b.name.localeCompare(a.name);
+            return b.nombre.localeCompare(a.nombre);
         default:
           return 0;
       }
     });
 
     return sorted;
-  }, [searchTerm, category, sortOrder]);
+  }, [products, searchTerm, category, sortOrder]);
 
   return (
     <div className="container mx-auto px-4 py-12">
@@ -67,7 +92,7 @@ export default function ProductosPage() {
           />
         </div>
         <div className='flex gap-4'>
-            <Select onValueChange={setCategory} defaultValue="All">
+            <Select onValueChange={setCategory} defaultValue="All" disabled={loading || categories.length === 0}>
             <SelectTrigger className="w-full md:w-[200px]">
                 <SelectValue placeholder="Filtrar por categoría" />
             </SelectTrigger>
@@ -78,7 +103,7 @@ export default function ProductosPage() {
             </SelectContent>
             </Select>
 
-            <Select onValueChange={setSortOrder} defaultValue="price-desc">
+            <Select onValueChange={setSortOrder} defaultValue="price-desc" disabled={loading}>
             <SelectTrigger className="w-full md:w-[200px]">
                 <SelectValue placeholder="Ordenar por" />
             </SelectTrigger>
@@ -92,7 +117,17 @@ export default function ProductosPage() {
         </div>
       </div>
 
-      {filteredAndSortedProducts.length > 0 ? (
+      {loading ? (
+         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <div key={i} className="space-y-2">
+                <Skeleton className="h-48 w-full" />
+                <Skeleton className="h-4 w-3/4" />
+                <Skeleton className="h-4 w-1/2" />
+              </div>
+            ))}
+         </div>
+      ) : filteredAndSortedProducts.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
           {filteredAndSortedProducts.map((product) => (
             <ProductCard key={product.id} product={product} />

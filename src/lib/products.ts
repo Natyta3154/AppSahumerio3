@@ -1,67 +1,56 @@
-import { PlaceHolderImages } from './placeholder-images';
+export type Offer = {
+  idOferta: number;
+  valorDescuento: number;
+  tipoDescuento: 'PORCENTAJE' | 'MONTO';
+  fechaInicio: string;
+  fechaFin: string;
+  estado: boolean;
+  precio: number;
+};
 
 export type ProductVariant = {
-  id: string;
-  name: string;
-  priceModifier?: number;
-  imageId: string;
+  id: number;
+  nombre: string;
 };
 
 export type Product = {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  imageId: string;
-  category: 'Incense' | 'Burner' | 'Merchandise';
-  variants?: ProductVariant[];
+  id: number;
+  nombre: string;
+  descripcion: string;
+  precio: number;
+  precioMayorista: number;
+  stock: number;
+  imagenUrl: string;
+  activo: boolean;
+  categoriaNombre: string;
+  fragancias: ProductVariant[];
+  ofertas: Offer[];
 };
 
-export const products: Product[] = [
-  {
-    id: '1',
-    name: 'Varitas de Incienso Artesanal',
-    description: 'Calma tu mente y alma con nuestras varitas de incienso hechas a mano. Elige tu fragancia favorita para crear el ambiente perfecto.',
-    price: 8.99,
-    imageId: 'incense-lavender', // Default image
-    category: 'Incense',
-    variants: [
-      { id: 'v1', name: 'Flor de Lavanda', imageId: 'incense-lavender' },
-      { id: 'v2', name: 'Sándalo Sagrado', priceModifier: 1.00, imageId: 'incense-sandalwood' },
-      { id: 'v3', name: 'Rosa Mística', imageId: 'incense-rose' },
-      { id: 'v4', name: 'Incienso Dorado', priceModifier: 2.00, imageId: 'incense-frankincense' },
-    ],
-  },
-  {
-    id: '5',
-    name: 'Quemador Flor de Loto',
-    description: 'Un elegante quemador de cerámica con forma de loto, perfecto para incienso en varita.',
-    price: 19.99,
-    imageId: 'burner-lotus',
-    category: 'Burner',
-  },
-  {
-    id: '6',
-    name: 'Quemador de Reflujo Montaña Brumosa',
-    description: 'Observa cómo el humo fluye suavemente como una cascada con este impresionante quemador de reflujo.',
-    price: 29.99,
-    imageId: 'burner-waterfall',
-    category: 'Burner',
-  },
-  {
-    id: '7',
-    name: 'Bolso de Tela "Aura"',
-    description: 'Lleva tus esenciales en este elegante y espiritual bolso de tela.',
-    price: 24.99,
-    imageId: 'merch-tote',
-    category: 'Merchandise',
-  },
-  {
-    id: '8',
-    name: 'Taza "Momento Zen"',
-    description: 'Comienza tu día con un momento de paz con nuestra taza de cerámica zen.',
-    price: 15.99,
-    imageId: 'merch-mug',
-    category: 'Merchandise',
-  },
-];
+export async function getProducts(): Promise<Product[]> {
+  try {
+    const res = await fetch('https://apisahumerios.onrender.com/productos/listar', {
+      next: { revalidate: 3600 } // Revalidate every hour
+    });
+    if (!res.ok) {
+      throw new Error('Failed to fetch products');
+    }
+    const products = await res.json();
+    return products;
+  } catch (error) {
+    console.error("Error fetching products:", error);
+    return [];
+  }
+}
+
+export async function getProductById(id: string): Promise<Product | null> {
+  try {
+    // The API seems to list all products, so we fetch all and find by id
+    const products = await getProducts();
+    const product = products.find((p) => p.id.toString() === id);
+    return product || null;
+  } catch (error) {
+    console.error(`Error fetching product with id ${id}:`, error);
+    return null;
+  }
+}

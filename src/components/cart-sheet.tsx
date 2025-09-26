@@ -10,7 +10,6 @@ import {
 import { Button } from './ui/button';
 import { useCart } from '@/hooks/use-cart.tsx';
 import Image from 'next/image';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Minus, Plus, Trash2, ShoppingCart } from 'lucide-react';
 import { Separator } from './ui/separator';
 
@@ -28,17 +27,16 @@ export function CartSheet({ children }: { children: React.ReactNode }) {
             <div className="flex-1 overflow-y-auto -mx-6 px-6">
               <div className="flex flex-col gap-4">
                 {cart.map(({ product, quantity }) => {
-                  const placeholder = PlaceHolderImages.find((p) => p.id === product.imageId);
                   return (
                     <div key={product.id} className="flex items-start gap-4">
                       <div className="relative h-20 w-20 rounded-md overflow-hidden flex-shrink-0">
-                        {placeholder && (
+                        {product.imageUrl && (
                           <Image
-                            src={placeholder.imageUrl}
+                            src={product.imageUrl}
                             alt={product.name}
                             fill
                             className="object-cover"
-                            data-ai-hint={placeholder.imageHint}
+                            unoptimized
                           />
                         )}
                       </div>

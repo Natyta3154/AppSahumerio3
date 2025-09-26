@@ -1,8 +1,7 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
-import { products, type ProductVariant } from '@/lib/products';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
+import { type Product, type ProductVariant } from '@/lib/products';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/hooks/use-cart';
@@ -12,14 +11,65 @@ import { Label } from '@/components/ui/label';
 import { ShoppingCart, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
+import { Skeleton } from '@/components/ui/skeleton';
+
+// Helper to check if an offer is active
+const getActiveOffer = (product: Product) => {
+  const now = new Date();
+  return product.ofertas?.find(offer => {
+    const startDate = new Date(offer.fechaInicio);
+    const endDate = new Date(offer.fechaFin);
+    return offer.estado && now >= startDate && now <= endDate;
+  });
+};
 
 export default function ProductDetailPage() {
   const params = useParams<{ id: string }>();
-  const product = products.find((p) => p.id === params.id);
-  const [selectedVariant, setSelectedVariant] = useState<ProductVariant | undefined>(product?.variants?.[0]);
+  const [product, setProduct] = useState<Product | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [selectedVariant, setSelectedVariant] = useState<ProductVariant | undefined>(undefined);
 
   const { addToCart } = useCart();
   const { toast } = useToast();
+
+  useEffect(() => {
+    if (!params.id) return;
+    async function fetchProduct() {
+      try {
+        setLoading(true);
+        const res = await fetch(`https://apisahumerios.onrender.com/productos/listar`);
+        const products = await res.json();
+        const foundProduct = products.find((p: Product) => p.id.toString() === params.id);
+        setProduct(foundProduct || null);
+        if (foundProduct?.fragancias?.length > 0) {
+          setSelectedVariant(foundProduct.fragancias[0]);
+        }
+      } catch (error) {
+        console.error(error);
+        setProduct(null);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchProduct();
+  }, [params.id]);
+
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-12">
+        <Skeleton className="h-8 w-48 mb-8" />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
+          <Skeleton className="aspect-square rounded-lg" />
+          <div className="space-y-4">
+            <Skeleton className="h-10 w-3/4" />
+            <Skeleton className="h-8 w-1/4" />
+            <Skeleton className="h-20 w-full" />
+            <Skeleton className="h-12 w-full" />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (!product) {
     return (
@@ -34,26 +84,24 @@ export default function ProductDetailPage() {
     );
   }
 
-  const currentVariant = product.variants ? selectedVariant : undefined;
-  const displayPrice = product.price + (currentVariant?.priceModifier || 0);
-  const displayImageId = currentVariant?.imageId || product.imageId;
-  const placeholder = PlaceHolderImages.find((p) => p.id === displayImageId);
+  const activeOffer = getActiveOffer(product);
+  const displayPrice = activeOffer ? activeOffer.precio : product.precio;
 
   const handleAddToCart = () => {
-    // Create a product representation for the cart
-    const productToAdd = {
-      ...product,
-      // If there's a variant, we create a unique ID and name for the cart item
-      id: currentVariant ? `${product.id}-${currentVariant.id}` : product.id,
-      name: currentVariant ? `${product.name} - ${currentVariant.name}` : product.name,
+    const productForCart = {
+      id: selectedVariant ? `${product.id}-${selectedVariant.id}` : product.id.toString(),
+      name: selectedVariant ? `${product.nombre} - ${selectedVariant.nombre}` : product.nombre,
+      description: product.descripcion,
       price: displayPrice,
-      imageId: displayImageId,
+      imageId: '', // Not used
+      imageUrl: product.imagenUrl,
+      category: product.categoriaNombre as any,
     };
 
-    addToCart(productToAdd);
+    addToCart(productForCart);
     toast({
       title: "Añadido al carrito",
-      description: `${productToAdd.name} ha sido añadido a tu carrito.`,
+      description: `${productForCart.name} ha sido añadido a tu carrito.`,
     });
   };
 
@@ -65,42 +113,43 @@ export default function ProductDetailPage() {
         </Link>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
         <div className="aspect-square relative rounded-lg overflow-hidden shadow-lg">
-          {placeholder && (
-            <Image
-              src={placeholder.imageUrl}
-              alt={product.name}
-              fill
-              className="object-cover"
-              data-ai-hint={placeholder.imageHint}
-            />
-          )}
+          <Image
+            src={product.imagenUrl}
+            alt={product.nombre}
+            fill
+            className="object-cover"
+            unoptimized
+          />
         </div>
         <div>
-          <h1 className="text-3xl md:text-4xl font-bold font-headline text-primary mb-4">{product.name}</h1>
-          <p className="text-3xl font-bold text-foreground mb-6">${displayPrice.toFixed(2)}</p>
-          <p className="text-muted-foreground mb-8">{product.description}</p>
+          <h1 className="text-3xl md:text-4xl font-bold font-headline text-primary mb-4">{product.nombre}</h1>
+          <div className="flex items-end gap-2 mb-6">
+              <p className={`text-3xl font-bold ${activeOffer ? 'text-destructive' : 'text-foreground'}`}>${displayPrice.toFixed(2)}</p>
+              {activeOffer && <p className="text-xl font-bold text-muted-foreground line-through">${product.precio.toFixed(2)}</p>}
+          </div>
+          <p className="text-muted-foreground mb-8">{product.descripcion}</p>
 
-          {product.variants && (
+          {product.fragancias && product.fragancias.length > 0 && (
             <div className="mb-8">
               <h2 className="text-lg font-semibold mb-4">Elige una fragancia:</h2>
               <RadioGroup
-                value={selectedVariant?.id}
+                value={selectedVariant?.id.toString()}
                 onValueChange={(variantId) => {
-                  const variant = product.variants?.find((v) => v.id === variantId);
+                  const variant = product.fragancias?.find((v) => v.id.toString() === variantId);
                   setSelectedVariant(variant);
                 }}
                 className="flex flex-wrap gap-4"
               >
-                {product.variants.map((variant) => (
+                {product.fragancias.map((variant) => (
                   <div key={variant.id}>
-                     <RadioGroupItem value={variant.id} id={variant.id} className="peer sr-only" />
+                     <RadioGroupItem value={variant.id.toString()} id={variant.id.toString()} className="peer sr-only" />
                      <Label 
-                        htmlFor={variant.id}
+                        htmlFor={variant.id.toString()}
                         className={cn(
                             "flex items-center justify-center rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer"
                         )}
                      >
-                        {variant.name} {variant.priceModifier ? `(+$${variant.priceModifier.toFixed(2)})` : ''}
+                        {variant.nombre}
                     </Label>
                   </div>
                 ))}
@@ -108,9 +157,15 @@ export default function ProductDetailPage() {
             </div>
           )}
 
-          <Button size="lg" className="w-full" onClick={handleAddToCart}>
-            <ShoppingCart className="mr-2 h-5 w-5" />
-            Añadir al Carrito
+          <Button size="lg" className="w-full" onClick={handleAddToCart} disabled={product.stock === 0}>
+             {product.stock > 0 ? (
+                <>
+                  <ShoppingCart className="mr-2 h-5 w-5" />
+                  Añadir al Carrito
+                </>
+              ) : (
+                'Sin Stock'
+              )}
           </Button>
         </div>
       </div>

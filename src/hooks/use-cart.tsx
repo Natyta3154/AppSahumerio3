@@ -1,16 +1,26 @@
 'use client';
 
-import type { Product } from '@/lib/products';
+// This is a simplified Product type for the cart context
+export type CartProduct = {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  category: string;
+  imageUrl?: string;
+  imageId?: string; // Keep for potential fallback
+};
+
 import { createContext, useContext, useState, useMemo, type ReactNode } from 'react';
 
 export type CartItem = {
-  product: Product;
+  product: CartProduct;
   quantity: number;
 };
 
 type CartContextType = {
   cart: CartItem[];
-  addToCart: (product: Product) => void;
+  addToCart: (product: CartProduct) => void;
   removeFromCart: (productId: string) => void;
   updateQuantity: (productId: string, quantity: number) => void;
   clearCart: () => void;
@@ -23,7 +33,7 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 export function CartProvider({ children }: { children: ReactNode }) {
   const [cart, setCart] = useState<CartItem[]>([]);
 
-  const addToCart = (product: Product) => {
+  const addToCart = (product: CartProduct) => {
     setCart((prevCart) => {
       const existingItem = prevCart.find((item) => item.product.id === product.id);
       if (existingItem) {
