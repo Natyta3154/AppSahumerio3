@@ -5,16 +5,32 @@ import { products } from "@/lib/products";
 import { Pencil, PlusCircle, Trash2 } from "lucide-react";
 import Image from "next/image";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { AddProductForm } from "./add-product-form";
+import { Badge } from "@/components/ui/badge";
 
 export default function AdminProductsPage() {
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold font-headline">Gestionar Productos</h1>
-        <Button>
-          <PlusCircle className="mr-2 h-4 w-4" />
-          Añadir Producto
-        </Button>
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button>
+              <PlusCircle className="mr-2 h-4 w-4" />
+              Añadir Producto
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[525px]">
+            <DialogHeader>
+              <DialogTitle>Añadir Nuevo Producto</DialogTitle>
+              <DialogDescription>
+                Completa los detalles para añadir un nuevo producto a tu tienda.
+              </DialogDescription>
+            </DialogHeader>
+            <AddProductForm />
+          </DialogContent>
+        </Dialog>
       </div>
       
       <Card>
@@ -51,7 +67,9 @@ export default function AdminProductsPage() {
                       )}
                     </TableCell>
                     <TableCell className="font-medium">{product.name}</TableCell>
-                    <TableCell>{product.category}</TableCell>
+                    <TableCell>
+                      <Badge variant="secondary">{product.category}</Badge>
+                    </TableCell>
                     <TableCell>${product.price.toFixed(2)}</TableCell>
                     <TableCell className="text-right">
                       <Button variant="ghost" size="icon" className="mr-2">

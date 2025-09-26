@@ -1,5 +1,5 @@
 import { SidebarProvider, Sidebar, SidebarHeader, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from "@/components/ui/sidebar";
-import { LayoutDashboard, ShoppingBasket, Sparkles, Wind } from "lucide-react";
+import { LayoutDashboard, ShoppingBasket, Sparkles, Wind, Users, Package } from "lucide-react";
 import Link from "next/link";
 
 export default function AdminLayout({
@@ -31,15 +31,31 @@ export default function AdminLayout({
                     <Link href="/admin/products">
                         <SidebarMenuButton>
                             <ShoppingBasket/>
-                            Products
+                            Productos
                         </SidebarMenuButton>
                     </Link>
                 </SidebarMenuItem>
                 <SidebarMenuItem>
+                    <Link href="/admin/orders">
+                        <SidebarMenuButton>
+                            <Package/>
+                            Pedidos
+                        </SidebarMenuButton>
+                    </Link>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                    <Link href="/admin/users">
+                        <SidebarMenuButton>
+                            <Users/>
+                            Usuarios
+                        </SidebarMenuButton>
+                    </Link>
+                </SidebarMenuItem>
+                 <SidebarMenuItem>
                     <Link href="/admin/generate-description">
                         <SidebarMenuButton>
                             <Sparkles/>
-                            AI Descriptions
+                            Descripciones IA
                         </SidebarMenuButton>
                     </Link>
                 </SidebarMenuItem>
