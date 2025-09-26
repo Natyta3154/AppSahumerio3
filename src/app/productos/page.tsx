@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, Suspense } from 'react';
 import { type Product } from '@/lib/products';
 import { ProductCard } from '@/components/product-card';
 import { Input } from '@/components/ui/input';
@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Search } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 
-export default function ProductosPage() {
+function ProductList() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -19,7 +19,17 @@ export default function ProductosPage() {
     async function fetchProducts() {
       try {
         setLoading(true);
-        const res = await fetch('https://apisahumerios.onrender.com/productos/listar', { cache: 'no-store' });
+        // Give the API more time to respond
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 20000); // 20 seconds timeout
+        
+        const res = await fetch('https://apisahumerios.onrender.com/productos/listar', { 
+          cache: 'no-store',
+          signal: controller.signal
+        });
+        
+        clearTimeout(timeoutId);
+
         if (!res.ok) {
           throw new Error('Failed to fetch');
         }
@@ -71,16 +81,7 @@ export default function ProductosPage() {
   }, [products, searchTerm, category, sortOrder]);
 
   return (
-    <div className="container mx-auto px-4 py-12">
-      <div className="text-center mb-12">
-        <h1 className="text-4xl md:text-5xl font-bold font-headline text-primary mb-4">
-          Nuestra Colección Completa
-        </h1>
-        <p className="text-lg text-foreground/80 max-w-2xl mx-auto">
-          Explora todos nuestros productos y encuentra tus nuevos favoritos.
-        </p>
-      </div>
-
+    <>
       <div className="flex flex-col md:flex-row gap-4 mb-8 sticky top-16 bg-background/90 py-4 z-10 backdrop-blur-sm">
         <div className="relative flex-grow">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
@@ -116,7 +117,6 @@ export default function ProductosPage() {
             </Select>
         </div>
       </div>
-
       {loading ? (
          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
             {Array.from({ length: 8 }).map((_, i) => (
@@ -135,9 +135,41 @@ export default function ProductosPage() {
         </div>
       ) : (
         <div className="text-center py-16">
-          <p className="text-xl text-muted-foreground">No se encontraron productos con esos criterios.</p>
+          <p className="text-xl text-muted-foreground">No se encontraron productos. Es posible que el servidor esté tardando en responder.</p>
         </div>
       )}
+    </>
+  );
+}
+
+function ProductPageSkeleton() {
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+      {Array.from({ length: 8 }).map((_, i) => (
+        <div key={i} className="space-y-2">
+          <Skeleton className="h-48 w-full" />
+          <Skeleton className="h-4 w-3/4" />
+          <Skeleton className="h-4 w-1/2" />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export default function ProductosPage() {
+  return (
+    <div className="container mx-auto px-4 py-12">
+      <div className="text-center mb-12">
+        <h1 className="text-4xl md:text-5xl font-bold font-headline text-primary mb-4">
+          Nuestra Colección Completa
+        </h1>
+        <p className="text-lg text-foreground/80 max-w-2xl mx-auto">
+          Explora todos nuestros productos y encuentra tus nuevos favoritos.
+        </p>
+      </div>
+      <Suspense fallback={<ProductPageSkeleton />}>
+        <ProductList />
+      </Suspense>
     </div>
   );
 }
