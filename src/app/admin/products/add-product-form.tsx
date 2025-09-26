@@ -36,6 +36,7 @@ export function AddProductForm() {
               <SelectItem value="Incense">Incienso</SelectItem>
               <SelectItem value="Burner">Quemador</SelectItem>
               <SelectItem value="Merchandise">Merchandise</SelectItem>
+              <SelectItem value="Velas">Velas</SelectItem>
             </SelectContent>
           </Select>
         </div>
