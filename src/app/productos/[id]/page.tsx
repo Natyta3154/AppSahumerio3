@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import { useParams } from 'next/navigation';
 import { products, type ProductVariant } from '@/lib/products';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import Image from 'next/image';
@@ -12,7 +13,8 @@ import { ShoppingCart, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 
-export default function ProductDetailPage({ params }: { params: { id: string } }) {
+export default function ProductDetailPage() {
+  const params = useParams<{ id: string }>();
   const product = products.find((p) => p.id === params.id);
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | undefined>(product?.variants?.[0]);
 
