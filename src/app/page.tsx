@@ -1,15 +1,41 @@
 import { ProductCard } from '@/components/product-card';
 import { products } from '@/lib/products';
-import { incenseSticks } from '@/lib/products';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { ArrowRight } from 'lucide-react';
+
+const blogPosts = [
+  {
+    id: '1',
+    title: 'Los 5 Beneficios del Incienso de Sándalo para la Meditación',
+    excerpt: 'Descubre cómo el aroma terroso y amaderado del sándalo puede profundizar tu práctica de meditación...',
+    date: '15 de Julio, 2024',
+    imageId: 'blog-sandalwood',
+  },
+  {
+    id: '2',
+    title: 'Creando un Ritual Matutino con Aromaterapia',
+    excerpt: 'Empieza tu día con intención y energía positiva. Te mostramos cómo incorporar la aromaterapia en tu rutina.',
+    date: '10 de Julio, 2024',
+    imageId: 'blog-ritual',
+  },
+  {
+    id: '3',
+    title: 'Guía para Principiantes: Quemadores de Incienso',
+    excerpt: 'Estos fascinantes quemadores crean un efecto de cascada de humo. Aprende a usarlos de forma segura.',
+    date: '5 de Julio, 2024',
+    imageId: 'burner-waterfall',
+  },
+];
+
 
 export default function Home() {
   const heroImage = PlaceHolderImages.find(p => p.id === 'hero-background');
   
-  // Example offers - you can create a separate list for these
+  const featuredProducts = [...products].sort((a, b) => b.price - a.price).slice(0, 4);
   const offerProducts = products.slice(4, 8);
 
   return (
@@ -33,14 +59,19 @@ export default function Home() {
           <p className="text-lg md:text-xl text-white/90 max-w-3xl mx-auto animate-fade-in-up">
             Descubre nuestra colección exclusiva de inciensos artesanales y productos únicos, diseñados para elevar tus sentidos y traer tranquilidad a tu espacio.
           </p>
+          <div className="mt-8">
+            <Link href="/productos">
+              <Button size="lg">Explorar Colección</Button>
+            </Link>
+          </div>
         </div>
       </section>
 
       <div className="container mx-auto px-4 py-12">
         <section className="mb-16">
-          <h2 className="text-3xl font-headline font-bold mb-8 text-center border-b-2 border-primary/20 pb-4">Productos Destacados</h2>
+          <h2 className="text-3xl font-headline font-bold mb-8 text-center border-b-2 border-primary/20 pb-4">Productos Premium</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-            {products.slice(0, 4).map((product) => (
+            {featuredProducts.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
@@ -56,12 +87,46 @@ export default function Home() {
         </section>
 
         <section>
-          <h2 className="text-3xl font-headline font-bold mb-8 text-center border-b-2 border-primary/20 pb-4">Colección de Inciensos</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-            {incenseSticks.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
+          <div className="flex justify-between items-center mb-8 border-b-2 border-primary/20 pb-4">
+            <h2 className="text-3xl font-headline font-bold">Desde Nuestro Blog</h2>
+            <Link href="/blog">
+              <Button variant="outline">Ver todo</Button>
+            </Link>
           </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {blogPosts.map((post) => {
+                const placeholder = PlaceHolderImages.find((p) => p.id === post.imageId);
+                return (
+                    <Card key={post.id} className="flex flex-col overflow-hidden h-full transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+                    <CardHeader className="p-0">
+                        <div className="aspect-video overflow-hidden relative">
+                        {placeholder && (
+                            <Image
+                            src={placeholder.imageUrl}
+                            alt={post.title}
+                            fill
+                            className="object-cover"
+                            data-ai-hint={placeholder.imageHint}
+                            />
+                        )}
+                        </div>
+                    </CardHeader>
+                    <CardContent className="p-6 flex-grow">
+                        <p className="text-sm text-muted-foreground mb-2">{post.date}</p>
+                        <CardTitle className="text-xl font-headline mb-2 leading-tight">{post.title}</CardTitle>
+                        <p className="text-muted-foreground text-sm">{post.excerpt}</p>
+                    </CardContent>
+                    <CardFooter className="p-6 pt-0">
+                        <Link href={`/blog/${post.id}`} className="w-full">
+                        <Button variant="outline" className="w-full">
+                            Leer más <ArrowRight className="ml-2 h-4 w-4" />
+                        </Button>
+                        </Link>
+                    </CardFooter>
+                    </Card>
+                );
+            })}
+           </div>
         </section>
       </div>
     </div>
