@@ -4,7 +4,7 @@
 import { useEffect, useRef, useState } from 'react';
 import Autoplay from "embla-carousel-autoplay";
 import { ProductCard } from '@/components/product-card';
-import { type Product, getProducts } from '@/lib/products';
+import { type Product } from '@/lib/products';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
@@ -80,26 +80,36 @@ function FetchErrorAlert() {
     );
 }
 
-// This is the new Server Component that fetches data
-export default async function HomePage() {
-  // Fetch data on the server
-  const { products, error } = await getProducts().then(
-    (data) => ({ products: data, error: null }),
-    (e) => ({ products: [], error: e instanceof Error ? e.message : "An unknown error occurred" })
-  );
 
-  return <HomeClient products={products} error={error} />;
-}
-
-
-// This is your original page, now renamed to HomeClient and receiving data via props
-function HomeClient({ products: allProducts, error }: { products: Product[], error: string | null }) {
+export default function HomePage() {
   const plugin = useRef(
     Autoplay({ delay: 3000, stopOnInteraction: true })
   );
   
-  // No more loading state needed here as data is pre-fetched
-  const loading = false;
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function fetchProducts() {
+      try {
+        setLoading(true);
+        setError(null);
+        const res = await fetch('https://apisahumerios.onrender.com/productos/listado', { cache: 'no-store' });
+        if (res.ok) {
+          const data = await res.json();
+          setAllProducts(data);
+        } else {
+          throw new Error('Failed to fetch products from API.');
+        }
+      } catch (e) {
+        setError(e instanceof Error ? e.message : "An unknown error occurred");
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchProducts();
+  }, []);
 
   const featuredProducts = [...allProducts].sort((a, b) => b.precio - a.precio).slice(0, 4);
   const offerProducts = allProducts.filter(p => getActiveOffer(p)).slice(0, 8);
