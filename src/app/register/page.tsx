@@ -1,4 +1,8 @@
-import { Button } from "@/components/ui/button"
+'use client';
+
+import { useActionState } from 'react';
+import { useFormStatus } from 'react-dom';
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -6,44 +10,79 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import Link from "next/link"
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import Link from "next/link";
+import { registerAction, type FormState } from './actions';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Terminal, Loader2 } from 'lucide-react';
+
+const initialState: FormState = {
+  message: '',
+  success: false,
+};
+
+function SubmitButton() {
+  const { pending } = useFormStatus();
+  return (
+    <Button className="w-full" type="submit" disabled={pending}>
+      {pending ? (
+        <>
+          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          Creando Cuenta...
+        </>
+      ) : (
+        'Sign up'
+      )}
+    </Button>
+  );
+}
 
 export default function RegisterPage() {
+  const [state, formAction] = useActionState(registerAction, initialState);
+
   return (
     <div className="flex items-center justify-center min-h-[calc(100vh-10rem)] py-12">
       <Card className="w-full max-w-sm">
-        <CardHeader>
-          <CardTitle className="text-2xl font-headline">Create an account</CardTitle>
-          <CardDescription>
-            Enter your details below to create a new account.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="grid gap-4">
-           <div className="grid gap-2">
-            <Label htmlFor="name">Name</Label>
-            <Input id="name" type="text" placeholder="Your Name" required />
-          </div>
-          <div className="grid gap-2">
-            <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" placeholder="m@example.com" required />
-          </div>
-          <div className="grid gap-2">
-            <Label htmlFor="password">Password</Label>
-            <Input id="password" type="password" required />
-          </div>
-        </CardContent>
-        <CardFooter className="flex flex-col gap-4">
-          <Button className="w-full">Sign up</Button>
-          <div className="text-center text-sm">
-            Already have an account?{" "}
-            <Link href="/login" className="underline">
-              Sign in
-            </Link>
-          </div>
-        </CardFooter>
+        <form action={formAction}>
+          <CardHeader>
+            <CardTitle className="text-2xl font-headline">Crear una cuenta</CardTitle>
+            <CardDescription>
+              Introduce tus datos para crear una nueva cuenta.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-4">
+            <div className="grid gap-2">
+              <Label htmlFor="name">Nombre</Label>
+              <Input id="name" name="name" type="text" placeholder="Tu Nombre" required />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="email">Email</Label>
+              <Input id="email" name="email" type="email" placeholder="m@example.com" required />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="password">Contraseña</Label>
+              <Input id="password" name="password" type="password" required />
+            </div>
+             {state.message && !state.success && (
+              <Alert variant="destructive" className="mt-4">
+                <Terminal className="h-4 w-4" />
+                <AlertTitle>Error de Registro</AlertTitle>
+                <AlertDescription>{state.message}</AlertDescription>
+              </Alert>
+            )}
+          </CardContent>
+          <CardFooter className="flex flex-col gap-4">
+            <SubmitButton />
+            <div className="text-center text-sm">
+              ¿Ya tienes una cuenta?{" "}
+              <Link href="/login" className="underline">
+                Inicia sesión
+              </Link>
+            </div>
+          </CardFooter>
+        </form>
       </Card>
     </div>
   )
