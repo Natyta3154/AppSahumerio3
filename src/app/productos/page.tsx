@@ -1,36 +1,19 @@
-import { getProducts, type Product } from '@/lib/products';
-import { Suspense } from 'react';
+import { getProducts } from '@/lib/products';
 import ProductFilters from './product-filters';
-import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertTriangle } from 'lucide-react';
 
-function ProductPageSkeleton() {
-  return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-      {Array.from({ length: 8 }).map((_, i) => (
-        <div key={i} className="space-y-2">
-          <Skeleton className="h-48 w-full" />
-          <Skeleton className="h-4 w-3/4" />
-          <Skeleton className="h-4 w-1/2" />
-        </div>
-      ))}
-    </div>
-  );
-}
-
-function FetchErrorAlert() {
+function FetchErrorAlert({ error }: { error: string | null }) {
   return (
       <Alert variant="destructive">
           <AlertTriangle className="h-4 w-4" />
           <AlertTitle>Error al Cargar Productos</AlertTitle>
           <AlertDescription>
-              No pudimos cargar los productos en este momento. Por favor, intenta de nuevo más tarde.
+              No pudimos cargar los productos en este momento. {error && `Detalle: ${error}`}
           </AlertDescription>
       </Alert>
   );
 }
-
 
 export default async function ProductosPage() {
   const { products, error } = await getProducts().then(
@@ -48,9 +31,7 @@ export default async function ProductosPage() {
           Explora todos nuestros productos y encuentra tus nuevos favoritos.
         </p>
       </div>
-      <Suspense fallback={<ProductPageSkeleton />}>
-        {error ? <FetchErrorAlert /> : <ProductFilters products={products} />}
-      </Suspense>
+      {error ? <FetchErrorAlert error={error} /> : <ProductFilters products={products} />}
     </div>
   );
 }
