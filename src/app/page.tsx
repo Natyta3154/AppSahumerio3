@@ -10,9 +10,10 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowRight, Tag } from 'lucide-react';
+import { ArrowRight, Tag, AlertTriangle } from 'lucide-react';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 const blogPosts = [
   {
@@ -54,6 +55,18 @@ function ProductsLoadingSkeleton() {
   );
 }
 
+function FetchErrorAlert() {
+    return (
+        <Alert variant="destructive">
+            <AlertTriangle className="h-4 w-4" />
+            <AlertTitle>Error al Cargar Productos</AlertTitle>
+            <AlertDescription>
+                No pudimos cargar los productos en este momento. Por favor, intenta de nuevo más tarde.
+            </AlertDescription>
+        </Alert>
+    );
+}
+
 export default function Home() {
   const plugin = useRef(
     Autoplay({ delay: 3000, stopOnInteraction: true })
@@ -61,18 +74,23 @@ export default function Home() {
 
   const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchProducts() {
       try {
         setLoading(true);
+        setError(null);
         const res = await fetch('https://apisahumerios.onrender.com/productos/listado', { cache: 'no-store' });
         if (res.ok) {
           const data = await res.json();
           setAllProducts(data);
+        } else {
+          throw new Error(`Failed to fetch: ${res.status}`);
         }
-      } catch (error) {
-        console.error("Failed to fetch products for home page", error);
+      } catch (e) {
+        console.error("Failed to fetch products for home page", e);
+        setError(e instanceof Error ? e.message : "An unknown error occurred");
         setAllProducts([]);
       } finally {
         setLoading(false);
@@ -114,19 +132,21 @@ export default function Home() {
       </section>
 
       <div className="container mx-auto px-4 py-12">
-        {loading ? (
-          <div className="mb-20 p-8 md:p-12"><ProductsLoadingSkeleton /></div>
-        ) : offerProducts.length > 0 && (
-          <section className="mb-20 bg-accent/10 rounded-xl p-8 md:p-12 border border-accent/20 shadow-lg">
-            <div className="text-center mb-10">
-                <h2 className="text-4xl font-headline font-bold text-primary mb-3 flex items-center justify-center gap-3">
-                    <Tag className="h-8 w-8" />
-                    Ofertas Imperdibles
-                </h2>
-                <p className="text-lg text-foreground/80 max-w-2xl mx-auto">
-                    Aprovecha estos descuentos exclusivos por tiempo limitado.
-                </p>
-            </div>
+        <section className="mb-20 bg-accent/10 rounded-xl p-8 md:p-12 border border-accent/20 shadow-lg">
+          <div className="text-center mb-10">
+              <h2 className="text-4xl font-headline font-bold text-primary mb-3 flex items-center justify-center gap-3">
+                  <Tag className="h-8 w-8" />
+                  Ofertas Imperdibles
+              </h2>
+              <p className="text-lg text-foreground/80 max-w-2xl mx-auto">
+                  Aprovecha estos descuentos exclusivos por tiempo limitado.
+              </p>
+          </div>
+          {loading ? (
+             <div className="flex justify-center"><ProductsLoadingSkeleton/></div>
+          ) : error ? (
+              <FetchErrorAlert />
+          ) : offerProducts.length > 0 ? (
             <div className="flex justify-center">
               <Carousel
                 plugins={[plugin.current]}
@@ -135,7 +155,7 @@ export default function Home() {
                 onMouseLeave={plugin.current.reset}
                 opts={{
                   align: "start",
-                  loop: true,
+                  loop: offerProducts.length > 1,
                 }}
               >
                 <CarouselContent>
@@ -151,13 +171,17 @@ export default function Home() {
                 <CarouselNext className="hidden sm:flex" />
               </Carousel>
             </div>
-          </section>
-        )}
+          ) : (
+            <p className="text-center text-muted-foreground">No hay ofertas disponibles por el momento.</p>
+          )}
+        </section>
         
         <section className="mb-16">
           <h2 className="text-3xl font-headline font-bold mb-8 text-center border-b-2 border-primary/20 pb-4">Productos Premium</h2>
           {loading ? (
             <ProductsLoadingSkeleton />
+          ) : error ? (
+            <FetchErrorAlert />
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
               {featuredProducts.map((product) => (
