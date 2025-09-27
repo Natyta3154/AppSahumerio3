@@ -5,7 +5,7 @@ import { Button } from './ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from './ui/card';
 import { useCart } from '@/hooks/use-cart.tsx';
 import { useToast } from '@/hooks/use-toast';
-import { ShoppingCart, Eye } from 'lucide-react';
+import { ShoppingCart, Eye, ImageIcon } from 'lucide-react';
 import Link from 'next/link';
 import { Badge } from './ui/badge';
 import React from 'react';
@@ -31,6 +31,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
   const activeOffer = React.useMemo(() => getActiveOffer(product), [product]);
   const displayPrice = activeOffer ? activeOffer.precio : product.precio;
+  const imageUrl = product.imagenUrl || 'https://picsum.photos/seed/placeholder/400/400';
 
   const handleAddToCart = () => {
     // We need to adapt the product object to what the cart expects
@@ -41,7 +42,7 @@ export function ProductCard({ product }: ProductCardProps) {
       price: displayPrice,
       imageId: '', // We use imageUrl directly now, this can be adapted
       category: product.categoriaNombre as any, // adapt category type
-      imageUrl: product.imagenUrl,
+      imageUrl: imageUrl,
     };
     
     addToCart(productForCart);
@@ -54,13 +55,13 @@ export function ProductCard({ product }: ProductCardProps) {
   return (
     <Card className="flex flex-col overflow-hidden h-full transition-all duration-300 hover:shadow-lg hover:-translate-y-1 group">
         <CardHeader className="p-0">
-            <Link href={`/productos/${product.id}`} className='block aspect-square overflow-hidden relative'>
+            <Link href={`/productos/${product.id}`} className='block aspect-square overflow-hidden relative bg-secondary'>
                 <Image
-                src={product.imagenUrl}
-                alt={product.nombre}
-                fill
-                className="object-cover transition-transform duration-300 group-hover:scale-105"
-                unoptimized
+                  src={imageUrl}
+                  alt={product.nombre}
+                  fill
+                  className="object-cover transition-transform duration-300 group-hover:scale-105"
+                  unoptimized
                 />
                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                     <Eye className="h-8 w-8 text-white" />
