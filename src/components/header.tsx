@@ -1,3 +1,4 @@
+
 'use client';
 import Link from 'next/link';
 import { ShoppingBag, Wind, Menu } from 'lucide-react';
@@ -5,7 +6,7 @@ import { Button } from './ui/button';
 import { useCart } from '@/hooks/use-cart.tsx';
 import { CartSheet } from './cart-sheet';
 import { UserNav } from './user-nav';
-import { Sheet, SheetContent, SheetTrigger, SheetClose } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { useState } from 'react';
 
 const navLinks = [
@@ -44,7 +45,10 @@ export function Header() {
                         <span className="sr-only">Abrir menú</span>
                     </Button>
                 </SheetTrigger>
-                <SheetContent side="left">
+                <SheetContent side="left" className="p-0">
+                    <SheetHeader>
+                        <SheetTitle className="sr-only">Menú</SheetTitle>
+                    </SheetHeader>
                     <div className="p-4">
                         <Link href="/" className="flex items-center gap-2 mb-8" onClick={() => setIsMobileMenuOpen(false)}>
                             <Wind className="h-6 w-6 text-primary" />
