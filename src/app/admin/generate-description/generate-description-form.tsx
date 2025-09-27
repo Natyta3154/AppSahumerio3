@@ -1,6 +1,6 @@
 'use client';
 
-import { useFormState, useFormStatus } from 'react-dom';
+import { useActionState, useFormStatus } from 'react-dom';
 import { generateDescriptionAction, type FormState } from './actions';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
@@ -36,7 +36,7 @@ function SubmitButton() {
 }
 
 export default function GenerateDescriptionForm() {
-  const [state, formAction] = useFormState(generateDescriptionAction, initialState);
+  const [state, formAction] = useActionState(generateDescriptionAction, initialState);
 
   return (
     <form action={formAction}>
