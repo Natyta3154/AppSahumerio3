@@ -1,3 +1,4 @@
+
 'use server';
 
 import { redirect } from 'next/navigation';
@@ -39,8 +40,11 @@ export async function loginAction(
     if (responseData.usuario?.rol) {
       cookies().set('user-role', responseData.usuario.rol, { httpOnly: true, path: '/' });
     }
-     if (responseData.usuario?.nombre) {
+    if (responseData.usuario?.nombre) {
       cookies().set('user-name', responseData.usuario.nombre, { httpOnly: true, path: '/' });
+    }
+    if (responseData.usuario?.email) {
+      cookies().set('user-email', responseData.usuario.email, { httpOnly: true, path: '/' });
     }
 
   } catch (error) {
@@ -64,5 +68,6 @@ export async function loginAction(
 export async function logoutAction() {
   cookies().delete('user-role');
   cookies().delete('user-name');
+  cookies().delete('user-email');
   redirect('/');
 }

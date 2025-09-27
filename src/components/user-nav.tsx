@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -15,10 +16,12 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { LayoutDashboard, LogOut, User as UserIcon } from 'lucide-react';
 import { logoutAction } from '@/app/login/actions';
+import { Skeleton } from './ui/skeleton';
 
 export function UserNav() {
   const [userName, setUserName] = useState<string | null>(null);
   const [userRole, setUserRole] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     // Reading cookies on the client side
@@ -26,6 +29,7 @@ export function UserNav() {
     const role = getCookie('user-role');
     setUserName(typeof name === 'string' ? name : null);
     setUserRole(typeof role === 'string' ? role : null);
+    setIsLoading(false);
   }, []);
 
   const getInitials = (name: string) => {
@@ -36,6 +40,10 @@ export function UserNav() {
       .toUpperCase();
   };
   
+  if (isLoading) {
+    return <Skeleton className="h-8 w-8 rounded-full" />;
+  }
+
   if (!userName || !userRole) {
     return (
       <Link href="/login">
