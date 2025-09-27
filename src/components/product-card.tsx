@@ -16,12 +16,14 @@ interface ProductCardProps {
 
 // Helper to check if an offer is active
 const getActiveOffer = (product: Product) => {
-  if (!product.ofertas) return undefined;
+  if (!product.ofertas || product.ofertas.length === 0) return undefined;
   const now = new Date();
   return product.ofertas.find(offer => {
     const startDate = new Date(offer.fechaInicio);
     const endDate = new Date(offer.fechaFin);
-    return offer.estado && now >= startDate && now <= endDate;
+    // Add a day to the end date to make it inclusive
+    endDate.setDate(endDate.getDate() + 1);
+    return offer.estado && now >= startDate && now < endDate;
   });
 };
 

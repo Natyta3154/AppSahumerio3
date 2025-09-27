@@ -41,6 +41,20 @@ const blogPosts = [
 
 const heroImage = PlaceHolderImages.find(p => p.id === 'hero-background');
 
+// Helper to check if an offer is active
+const getActiveOffer = (product: Product) => {
+  if (!product.ofertas || product.ofertas.length === 0) return undefined;
+  const now = new Date();
+  return product.ofertas.find(offer => {
+    const startDate = new Date(offer.fechaInicio);
+    const endDate = new Date(offer.fechaFin);
+    // Add a day to the end date to make it inclusive
+    endDate.setDate(endDate.getDate() + 1);
+    return offer.estado && now >= startDate && now < endDate;
+  });
+};
+
+
 function ProductsLoadingSkeleton() {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
@@ -100,7 +114,7 @@ export default function Home() {
   }, []);
 
   const featuredProducts = [...allProducts].sort((a, b) => b.precio - a.precio).slice(0, 4);
-  const offerProducts = allProducts.filter(p => p.ofertas && p.ofertas.some(o => o.estado)).slice(0, 8);
+  const offerProducts = allProducts.filter(p => getActiveOffer(p)).slice(0, 8);
 
   return (
     <div className="dark">
