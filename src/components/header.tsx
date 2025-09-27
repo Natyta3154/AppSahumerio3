@@ -1,9 +1,10 @@
 'use client';
 import Link from 'next/link';
-import { ShoppingBag, User, Wind } from 'lucide-react';
+import { ShoppingBag, Wind } from 'lucide-react';
 import { Button } from './ui/button';
 import { useCart } from '@/hooks/use-cart.tsx';
 import { CartSheet } from './cart-sheet';
+import { UserNav } from './user-nav';
 
 export function Header() {
   const { totalItems } = useCart();
@@ -34,11 +35,7 @@ export function Header() {
               )}
             </Button>
           </CartSheet>
-          <Link href="/login">
-            <Button variant="ghost" size="icon">
-              <User className="h-5 w-5" />
-            </Button>
-          </Link>
+          <UserNav />
         </div>
       </div>
     </header>

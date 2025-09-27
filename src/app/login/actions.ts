@@ -34,11 +34,13 @@ export async function loginAction(
     }
 
     responseData = await response.json();
-
-    // Forward the session cookie from the API to the browser
-    const responseCookies = response.headers.get('set-cookie');
-    if (responseCookies) {
-      cookies().set('session', responseCookies);
+    
+    // Store user info in cookies
+    if (responseData.rol) {
+      cookies().set('user-role', responseData.rol, { httpOnly: true, path: '/' });
+    }
+     if (responseData.nombre) {
+      cookies().set('user-name', responseData.nombre, { httpOnly: true, path: '/' });
     }
 
   } catch (error) {
@@ -57,4 +59,10 @@ export async function loginAction(
 
   // Fallback redirect if role is not present
   redirect('/productos');
+}
+
+export async function logoutAction() {
+  cookies().delete('user-role');
+  cookies().delete('user-name');
+  redirect('/');
 }
