@@ -70,15 +70,6 @@ export default async function Home() {
       </section>
 
       <div className="container mx-auto px-4 py-12">
-        <section className="mb-16">
-          <h2 className="text-3xl font-headline font-bold mb-8 text-center border-b-2 border-primary/20 pb-4">Productos Premium</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-            {featuredProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
-        </section>
-        
         {offerProducts.length > 0 && (
           <section className="mb-16 bg-secondary/30 rounded-lg p-8">
             <h2 className="text-3xl font-headline font-bold mb-8 text-center border-b-2 border-primary/20 pb-4">Ofertas Especiales</h2>
@@ -89,6 +80,15 @@ export default async function Home() {
             </div>
           </section>
         )}
+        
+        <section className="mb-16">
+          <h2 className="text-3xl font-headline font-bold mb-8 text-center border-b-2 border-primary/20 pb-4">Productos Premium</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+            {featuredProducts.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        </section>
 
         <section>
           <div className="flex justify-between items-center mb-8 border-b-2 border-primary/20 pb-4">
