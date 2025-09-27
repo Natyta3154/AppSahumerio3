@@ -1,6 +1,6 @@
 'use client';
 
-import * from 'react';
+import * as React from 'react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -20,20 +20,25 @@ import { useToast } from '@/hooks/use-toast';
 interface DeleteProductDialogProps {
   productId: number;
   productName: string;
+  onSuccess: () => void;
 }
 
-export function DeleteProductDialog({ productId, productName }: DeleteProductDialogProps) {
+export function DeleteProductDialog({ productId, productName, onSuccess }: DeleteProductDialogProps) {
   const [isPending, startTransition] = React.useTransition();
   const { toast } = useToast();
 
   const handleDelete = () => {
     startTransition(async () => {
       const result = await deleteProductAction(productId);
+      const isError = result.message.toLowerCase().includes('error');
       toast({
-        title: result.message?.includes('Error') ? "Error" : "Éxito",
+        title: isError ? "Error" : "Éxito",
         description: result.message,
-        variant: result.message?.includes('Error') ? "destructive" : "default",
+        variant: isError ? "destructive" : "default",
       });
+      if (!isError) {
+        onSuccess();
+      }
     });
   };
 
@@ -46,16 +51,20 @@ export function DeleteProductDialog({ productId, productName }: DeleteProductDia
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
+          <AlertDialogTitle>¿Estás realmente seguro?</AlertDialogTitle>
           <AlertDialogDescription>
             Esta acción no se puede deshacer. Esto eliminará permanentemente el producto
-            <span className="font-semibold"> {productName}</span>.
+            <span className="font-semibold"> {productName}</span> de tus registros.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancelar</AlertDialogCancel>
-          <AlertDialogAction onClick={handleDelete} disabled={isPending}>
-            {isPending ? 'Eliminando...' : 'Eliminar'}
+          <AlertDialogAction 
+            onClick={handleDelete} 
+            disabled={isPending}
+            className="bg-destructive hover:bg-destructive/90"
+          >
+            {isPending ? 'Eliminando...' : 'Sí, eliminar'}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

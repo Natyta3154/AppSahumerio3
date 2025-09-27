@@ -1,12 +1,12 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { getProducts, type Product } from "@/lib/products";
 import { Pencil, PlusCircle } from "lucide-react";
 import Image from "next/image";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { ProductForm } from "./product-form";
 import { DeleteProductDialog } from "./delete-product-dialog";
 import { Badge } from "@/components/ui/badge";
@@ -18,15 +18,22 @@ export default function AdminProductsPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
 
-  useEffect(() => {
-    async function loadProducts() {
-      setLoading(true);
+  const loadProducts = useCallback(async () => {
+    setLoading(true);
+    try {
       const fetchedProducts = await getProducts();
       setProducts(fetchedProducts);
+    } catch (error) {
+      console.error("Failed to load products:", error);
+      // Here you could add a toast notification to inform the user
+    } finally {
       setLoading(false);
     }
-    loadProducts();
   }, []);
+
+  useEffect(() => {
+    loadProducts();
+  }, [loadProducts]);
 
   const handleOpenDialog = (product: Product | null = null) => {
     setEditingProduct(product);
@@ -38,12 +45,9 @@ export default function AdminProductsPage() {
     setEditingProduct(null);
   };
 
-  const handleSuccess = async () => {
+  const handleSuccess = () => {
     handleCloseDialog();
-    setLoading(true);
-    const updatedProducts = await getProducts();
-    setProducts(updatedProducts);
-    setLoading(false);
+    loadProducts(); // Reload products on success
   };
 
   return (
@@ -64,7 +68,7 @@ export default function AdminProductsPage() {
               {editingProduct ? 'Modifica los detalles del producto.' : 'Completa los detalles para añadir un nuevo producto.'}
             </DialogDescription>
           </DialogHeader>
-          <ProductForm product={editingProduct} onSuccess={handleSuccess} />
+          <ProductForm product={editingProduct} onSuccess={handleSuccess} onCancel={handleCloseDialog} />
         </DialogContent>
       </Dialog>
       
@@ -120,7 +124,7 @@ export default function AdminProductsPage() {
                       <Button variant="ghost" size="icon" className="mr-2" onClick={() => handleOpenDialog(product)}>
                         <Pencil className="h-4 w-4" />
                       </Button>
-                      <DeleteProductDialog productId={product.id} productName={product.nombre} />
+                      <DeleteProductDialog productId={product.id} productName={product.nombre} onSuccess={handleSuccess} />
                     </TableCell>
                   </TableRow>
                 ))

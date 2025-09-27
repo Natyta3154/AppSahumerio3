@@ -3,20 +3,18 @@
 import { useActionState, useEffect, useRef } from 'react';
 import { useFormStatus } from 'react-dom';
 import { Button } from '@/components/ui/button';
-import { DialogFooter, DialogClose } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { type Product } from '@/lib/products';
 import { upsertProductAction, type FormState } from './actions';
 import { useToast } from '@/hooks/use-toast';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Terminal } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface ProductFormProps {
   product?: Product | null;
   onSuccess: () => void;
+  onCancel: () => void;
 }
 
 const initialState: FormState = {
@@ -33,7 +31,7 @@ function SubmitButton({ isEditing }: { isEditing: boolean }) {
   );
 }
 
-export function ProductForm({ product, onSuccess }: ProductFormProps) {
+export function ProductForm({ product, onSuccess, onCancel }: ProductFormProps) {
   const [state, formAction] = useActionState(upsertProductAction, initialState);
   const { toast } = useToast();
   const formRef = useRef<HTMLFormElement>(null);
@@ -41,69 +39,65 @@ export function ProductForm({ product, onSuccess }: ProductFormProps) {
 
   useEffect(() => {
     if (state.message) {
+      const isError = state.message.toLowerCase().includes('error');
       toast({
-        title: state.message.includes('Error') ? "Error" : "Éxito",
+        title: isError ? "Error" : "Éxito",
         description: state.message,
-        variant: state.message.includes('Error') ? "destructive" : "default",
+        variant: isError ? "destructive" : "default",
       });
-      if (state.message.includes('éxito')) {
+      if (!isError) {
         onSuccess();
-        formRef.current?.reset();
       }
     }
   }, [state, toast, onSuccess]);
-
+  
   return (
-    <form ref={formRef} action={formAction}>
+    <form ref={formRef} action={formAction} className="space-y-4">
       {product?.id && <input type="hidden" name="id" value={product.id} />}
-      <div className="grid gap-4 py-4">
+      <div className="space-y-1">
+        <Label htmlFor="nombre">Nombre</Label>
+        <Input id="nombre" name="nombre" defaultValue={product?.nombre ?? ''} required />
+        {state.errors?.nombre && <p className="text-sm text-destructive">{state.errors.nombre[0]}</p>}
+      </div>
+      <div className="space-y-1">
+        <Label htmlFor="descripcion">Descripción</Label>
+        <Textarea id="descripcion" name="descripcion" defaultValue={product?.descripcion ?? ''} required />
+        {state.errors?.descripcion && <p className="text-sm text-destructive">{state.errors.descripcion[0]}</p>}
+      </div>
+      <div className="grid grid-cols-2 gap-4">
         <div className="space-y-1">
-          <Label htmlFor="nombre">Nombre</Label>
-          <Input id="nombre" name="nombre" defaultValue={product?.nombre ?? ''} required />
-          {state.errors?.nombre && <p className="text-sm text-destructive">{state.errors.nombre[0]}</p>}
+          <Label htmlFor="precio">Precio</Label>
+          <Input id="precio" name="precio" type="number" step="0.01" defaultValue={product?.precio ?? ''} required />
+          {state.errors?.precio && <p className="text-sm text-destructive">{state.errors.precio[0]}</p>}
         </div>
         <div className="space-y-1">
-          <Label htmlFor="descripcion">Descripción</Label>
-          <Textarea id="descripcion" name="descripcion" defaultValue={product?.descripcion ?? ''} required />
-          {state.errors?.descripcion && <p className="text-sm text-destructive">{state.errors.descripcion[0]}</p>}
-        </div>
-        <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-1">
-            <Label htmlFor="precio">Precio</Label>
-            <Input id="precio" name="precio" type="number" step="0.01" defaultValue={product?.precio ?? ''} required />
-            {state.errors?.precio && <p className="text-sm text-destructive">{state.errors.precio[0]}</p>}
-          </div>
-          <div className="space-y-1">
-            <Label htmlFor="stock">Stock</Label>
-            <Input id="stock" name="stock" type="number" defaultValue={product?.stock ?? ''} required />
-            {state.errors?.stock && <p className="text-sm text-destructive">{state.errors.stock[0]}</p>}
-          </div>
-        </div>
-        <div className="space-y-1">
-          <Label htmlFor="categoriaId">Categoría</Label>
-          <Select name="categoriaId" defaultValue={product?.categoriaNombre === 'Incienso' ? '1' : '2'}>
-            <SelectTrigger>
-              <SelectValue placeholder="Selecciona una categoría" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="1">Incienso</SelectItem>
-              <SelectItem value="2">Quemador</SelectItem>
-            </SelectContent>
-          </Select>
-          {state.errors?.categoriaId && <p className="text-sm text-destructive">{state.errors.categoriaId[0]}</p>}
-        </div>
-        <div className="space-y-1">
-          <Label htmlFor="imagenUrl">URL de Imagen</Label>
-          <Input id="imagenUrl" name="imagenUrl" defaultValue={product?.imagenUrl ?? ''} placeholder="https://example.com/image.jpg" />
-           {state.errors?.imagenUrl && <p className="text-sm text-destructive">{state.errors.imagenUrl[0]}</p>}
+          <Label htmlFor="stock">Stock</Label>
+          <Input id="stock" name="stock" type="number" defaultValue={product?.stock ?? ''} required />
+          {state.errors?.stock && <p className="text-sm text-destructive">{state.errors.stock[0]}</p>}
         </div>
       </div>
-      <DialogFooter>
-        <DialogClose asChild>
-          <Button variant="outline">Cancelar</Button>
-        </DialogClose>
+      <div className="space-y-1">
+        <Label htmlFor="categoriaId">Categoría</Label>
+        <Select name="categoriaId" defaultValue={product?.categoriaNombre === 'Incienso' ? '1' : product?.categoriaNombre === 'Quemador' ? '2' : undefined}>
+          <SelectTrigger>
+            <SelectValue placeholder="Selecciona una categoría" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="1">Incienso</SelectItem>
+            <SelectItem value="2">Quemador</SelectItem>
+          </SelectContent>
+        </Select>
+        {state.errors?.categoriaId && <p className="text-sm text-destructive">{state.errors.categoriaId[0]}</p>}
+      </div>
+      <div className="space-y-1">
+        <Label htmlFor="imagenUrl">URL de Imagen</Label>
+        <Input id="imagenUrl" name="imagenUrl" defaultValue={product?.imagenUrl ?? ''} placeholder="https://example.com/image.jpg" />
+        {state.errors?.imagenUrl && <p className="text-sm text-destructive">{state.errors.imagenUrl[0]}</p>}
+      </div>
+      <div className="flex justify-end gap-2 pt-4">
+        <Button type="button" variant="outline" onClick={onCancel}>Cancelar</Button>
         <SubmitButton isEditing={isEditing} />
-      </DialogFooter>
+      </div>
     </form>
   );
 }
