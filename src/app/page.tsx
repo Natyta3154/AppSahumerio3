@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Tag } from 'lucide-react';
 
 const blogPosts = [
   {
@@ -71,10 +71,18 @@ export default async function Home() {
 
       <div className="container mx-auto px-4 py-12">
         {offerProducts.length > 0 && (
-          <section className="mb-16 bg-secondary/30 rounded-lg p-8">
-            <h2 className="text-3xl font-headline font-bold mb-8 text-center border-b-2 border-primary/20 pb-4">Ofertas Especiales</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-              {offerProducts.map((product) => (
+          <section className="mb-20 bg-accent/10 rounded-xl p-8 md:p-12 border border-accent/20 shadow-lg">
+            <div className="text-center mb-10">
+                <h2 className="text-4xl font-headline font-bold text-primary mb-3 flex items-center justify-center gap-3">
+                    <Tag className="h-8 w-8" />
+                    Ofertas Imperdibles
+                </h2>
+                <p className="text-lg text-foreground/80 max-w-2xl mx-auto">
+                    Aprovecha estos descuentos exclusivos por tiempo limitado.
+                </p>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-5xl mx-auto">
+              {offerProducts.slice(0,3).map((product) => (
                 <ProductCard key={product.id} product={product} />
               ))}
             </div>
