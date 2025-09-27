@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowRight, Tag } from 'lucide-react';
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 
 const blogPosts = [
   {
@@ -81,10 +82,26 @@ export default async function Home() {
                     Aprovecha estos descuentos exclusivos por tiempo limitado.
                 </p>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-5xl mx-auto">
-              {offerProducts.slice(0,3).map((product) => (
-                <ProductCard key={product.id} product={product} />
-              ))}
+            <div className="flex justify-center">
+              <Carousel
+                opts={{
+                  align: "start",
+                  loop: true,
+                }}
+                className="w-full max-w-xs sm:max-w-md md:max-w-2xl lg:max-w-4xl"
+              >
+                <CarouselContent>
+                  {offerProducts.map((product) => (
+                    <CarouselItem key={product.id} className="md:basis-1/2 lg:basis-1/3">
+                      <div className="p-1 h-full">
+                        <ProductCard product={product} />
+                      </div>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <CarouselPrevious className="hidden sm:flex" />
+                <CarouselNext className="hidden sm:flex" />
+              </Carousel>
             </div>
           </section>
         )}
