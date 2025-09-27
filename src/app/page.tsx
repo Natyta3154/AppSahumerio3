@@ -1,5 +1,10 @@
+
+'use client';
+
+import { useRef } from 'react';
+import Autoplay from "embla-carousel-autoplay";
 import { ProductCard } from '@/components/product-card';
-import { getProducts } from '@/lib/products';
+import { type Product } from '@/lib/products';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
@@ -8,6 +13,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/componen
 import { ArrowRight, Tag } from 'lucide-react';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 
+// This data would typically come from a fetch call, so we create it outside the component
 const blogPosts = [
   {
     id: '1',
@@ -32,14 +38,31 @@ const blogPosts = [
   },
 ];
 
+// This is a temporary solution to pass async server component data to a client component.
+// In a real app, you would fetch this data inside a useEffect in a client component.
+let allProducts: Product[] = [];
+const heroImage = PlaceHolderImages.find(p => p.id === 'hero-background');
 
-export default async function Home() {
-  const heroImage = PlaceHolderImages.find(p => p.id === 'hero-background');
+const fetchProducts = async () => {
+    try {
+        const res = await fetch('https://apisahumerios.onrender.com/productos/listado', { cache: 'no-store' });
+        if(res.ok) allProducts = await res.json();
+    } catch (error) {
+        console.error("Failed to fetch products for home page", error);
+        allProducts = [];
+    }
+}
+
+export default function Home() {
+  const plugin = useRef(
+    Autoplay({ delay: 3000, stopOnInteraction: true })
+  );
   
-  const allProducts = await getProducts();
-  
+  // A simple way to pre-fetch data for the client component part
+  fetchProducts();
+
   const featuredProducts = [...allProducts].sort((a, b) => b.precio - a.precio).slice(0, 4);
-  const offerProducts = allProducts.filter(p => p.ofertas && p.ofertas.some(o => o.estado)).slice(0, 4);
+  const offerProducts = allProducts.filter(p => p.ofertas && p.ofertas.some(o => o.estado)).slice(0, 8);
 
   return (
     <div className="dark">
@@ -84,16 +107,21 @@ export default async function Home() {
             </div>
             <div className="flex justify-center">
               <Carousel
+                plugins={[plugin.current]}
+                className="w-full"
+                onMouseEnter={plugin.current.stop}
+                onMouseLeave={plugin.current.reset}
                 opts={{
                   align: "start",
                   loop: true,
                 }}
-                className="w-full max-w-xl"
               >
                 <CarouselContent>
                   {offerProducts.map((product) => (
-                    <CarouselItem key={product.id} className="h-full">
-                      <ProductCard product={product} />
+                    <CarouselItem key={product.id} className="h-full md:basis-1/2 lg:basis-1/3">
+                      <div className='p-1 h-full'>
+                         <ProductCard product={product} />
+                      </div>
                     </CarouselItem>
                   ))}
                 </CarouselContent>
