@@ -35,12 +35,12 @@ export async function loginAction(
 
     responseData = await response.json();
     
-    // Store user info in cookies
-    if (responseData.rol) {
-      cookies().set('user-role', responseData.rol, { httpOnly: true, path: '/' });
+    // Store user info from the nested "usuario" object in cookies
+    if (responseData.usuario?.rol) {
+      cookies().set('user-role', responseData.usuario.rol, { httpOnly: true, path: '/' });
     }
-     if (responseData.nombre) {
-      cookies().set('user-name', responseData.nombre, { httpOnly: true, path: '/' });
+     if (responseData.usuario?.nombre) {
+      cookies().set('user-name', responseData.usuario.nombre, { httpOnly: true, path: '/' });
     }
 
   } catch (error) {
@@ -48,9 +48,9 @@ export async function loginAction(
     return { message: 'No se pudo conectar al servidor. Inténtalo más tarde.' };
   }
 
-  // Redirect based on user role
-  if (responseData && responseData.rol) {
-    if (responseData.rol.toUpperCase() === 'ADMIN') {
+  // Redirect based on user role from the nested "usuario" object
+  if (responseData?.usuario?.rol) {
+    if (responseData.usuario.rol.toUpperCase() === 'ADMIN') {
       redirect('/admin');
     } else {
       redirect('/productos');
