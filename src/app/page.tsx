@@ -88,7 +88,7 @@ export default async function Home() {
                   align: "start",
                   loop: true,
                 }}
-                className="w-full max-w-sm"
+                className="w-full max-w-md"
               >
                 <CarouselContent>
                   {offerProducts.map((product) => (
