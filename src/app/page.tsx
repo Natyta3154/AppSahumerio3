@@ -88,11 +88,11 @@ export default async function Home() {
                   align: "start",
                   loop: true,
                 }}
-                className="w-full max-w-xs sm:max-w-md md:max-w-2xl lg:max-w-4xl"
+                className="w-full max-w-sm"
               >
                 <CarouselContent>
                   {offerProducts.map((product) => (
-                    <CarouselItem key={product.id} className="md:basis-1/2 lg:basis-1/3">
+                    <CarouselItem key={product.id}>
                       <div className="p-1 h-full">
                         <ProductCard product={product} />
                       </div>
