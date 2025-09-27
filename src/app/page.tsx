@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Autoplay from "embla-carousel-autoplay";
 import { ProductCard } from '@/components/product-card';
 import { type Product } from '@/lib/products';
@@ -12,8 +12,8 @@ import Link from 'next/link';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowRight, Tag } from 'lucide-react';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
+import { Skeleton } from '@/components/ui/skeleton';
 
-// This data would typically come from a fetch call, so we create it outside the component
 const blogPosts = [
   {
     id: '1',
@@ -38,28 +38,48 @@ const blogPosts = [
   },
 ];
 
-// This is a temporary solution to pass async server component data to a client component.
-// In a real app, you would fetch this data inside a useEffect in a client component.
-let allProducts: Product[] = [];
 const heroImage = PlaceHolderImages.find(p => p.id === 'hero-background');
 
-const fetchProducts = async () => {
-    try {
-        const res = await fetch('https://apisahumerios.onrender.com/productos/listado', { cache: 'no-store' });
-        if(res.ok) allProducts = await res.json();
-    } catch (error) {
-        console.error("Failed to fetch products for home page", error);
-        allProducts = [];
-    }
+function ProductsLoadingSkeleton() {
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+      {Array.from({ length: 4 }).map((_, i) => (
+        <div key={i} className="space-y-2">
+          <Skeleton className="h-48 w-full" />
+          <Skeleton className="h-4 w-3/4" />
+          <Skeleton className="h-4 w-1/2" />
+        </div>
+      ))}
+    </div>
+  );
 }
 
 export default function Home() {
   const plugin = useRef(
     Autoplay({ delay: 3000, stopOnInteraction: true })
   );
-  
-  // A simple way to pre-fetch data for the client component part
-  fetchProducts();
+
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchProducts() {
+      try {
+        setLoading(true);
+        const res = await fetch('https://apisahumerios.onrender.com/productos/listado', { cache: 'no-store' });
+        if (res.ok) {
+          const data = await res.json();
+          setAllProducts(data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch products for home page", error);
+        setAllProducts([]);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchProducts();
+  }, []);
 
   const featuredProducts = [...allProducts].sort((a, b) => b.precio - a.precio).slice(0, 4);
   const offerProducts = allProducts.filter(p => p.ofertas && p.ofertas.some(o => o.estado)).slice(0, 8);
@@ -94,7 +114,9 @@ export default function Home() {
       </section>
 
       <div className="container mx-auto px-4 py-12">
-        {offerProducts.length > 0 && (
+        {loading ? (
+          <div className="mb-20 p-8 md:p-12"><ProductsLoadingSkeleton /></div>
+        ) : offerProducts.length > 0 && (
           <section className="mb-20 bg-accent/10 rounded-xl p-8 md:p-12 border border-accent/20 shadow-lg">
             <div className="text-center mb-10">
                 <h2 className="text-4xl font-headline font-bold text-primary mb-3 flex items-center justify-center gap-3">
@@ -134,11 +156,15 @@ export default function Home() {
         
         <section className="mb-16">
           <h2 className="text-3xl font-headline font-bold mb-8 text-center border-b-2 border-primary/20 pb-4">Productos Premium</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-            {featuredProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
+          {loading ? (
+            <ProductsLoadingSkeleton />
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+              {featuredProducts.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+          )}
         </section>
 
         <section>

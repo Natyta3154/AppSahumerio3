@@ -3,7 +3,7 @@
     {
       "id": "incense-lavender",
       "description": "Lavender incense sticks in a bundle.",
-      "imageUrl": "https://images.unsplash.com/photo-1717749714330-914f3353208e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxsYXZlbmRlciUyMGluY2Vuc2V8ZW58MHx8fHwxNzU4ODYzMjk1fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1541580597144-80b628456606?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       "imageHint": "lavender incense"
     },
     {
@@ -15,7 +15,7 @@
     {
       "id": "incense-rose",
       "description": "Rose scented incense sticks.",
-      "imageUrl": "https://images.unsplash.com/photo-1540163666511-975cf4d06bba?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxyb3NlJTIwaW5jZW5zZXxlbnwwfHx8fDE3NTg4NjMyOTV8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1621282121542-491326c93026?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       "imageHint": "rose incense"
     },
     {
@@ -27,7 +27,7 @@
     {
       "id": "burner-lotus",
       "description": "A lotus-shaped incense burner.",
-      "imageUrl": "https://images.unsplash.com/photo-1721444343424-d62032f51b17?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxsb3R1cyUyMGJ1cm5lcnxlbnwwfHx8fDE3NTg4NjMyOTV8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1565350320641-5a0a38b30962?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       "imageHint": "lotus burner"
     },
     {
