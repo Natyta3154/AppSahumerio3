@@ -25,7 +25,7 @@ export function middleware(request: NextRequest) {
       return NextResponse.redirect(loginUrl)
     }
     
-    // Si está logueado pero no es ADMIN, redirigir a productos
+    // Si está logueado pero no es ADMIN, redirigir a una página de acceso denegado o a la home.
     if (userRole?.toUpperCase() !== 'ADMIN') {
        return NextResponse.redirect(new URL('/productos', request.url));
     }
