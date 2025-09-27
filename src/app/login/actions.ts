@@ -18,6 +18,7 @@ export async function loginAction(
     return { message: 'Por favor, introduce el email y la contraseña.' };
   }
 
+  let responseData;
   try {
     const response = await fetch('https://apisahumerios.onrender.com/usuarios/login', {
       method: 'POST',
@@ -32,6 +33,8 @@ export async function loginAction(
       return { message: errorData.message || 'Error al iniciar sesión. Verifica tus credenciales.' };
     }
 
+    responseData = await response.json();
+
     // Forward the session cookie from the API to the browser
     const responseCookies = response.headers.get('set-cookie');
     if (responseCookies) {
@@ -43,6 +46,15 @@ export async function loginAction(
     return { message: 'No se pudo conectar al servidor. Inténtalo más tarde.' };
   }
 
-  // Redirect to admin dashboard on successful login
-  redirect('/admin');
+  // Redirect based on user role
+  if (responseData && responseData.rol) {
+    if (responseData.rol.toUpperCase() === 'ADMIN') {
+      redirect('/admin');
+    } else {
+      redirect('/productos');
+    }
+  }
+
+  // Fallback redirect if role is not present
+  redirect('/productos');
 }
