@@ -1,5 +1,7 @@
 'use client';
 
+import { createContext, useContext, useState, useMemo, type ReactNode } from 'react';
+
 // This is a simplified Product type for the cart context
 export type CartProduct = {
   id: string;
@@ -10,8 +12,6 @@ export type CartProduct = {
   imageUrl?: string;
   imageId?: string; // Keep for potential fallback
 };
-
-import { createContext, useContext, useState, useMemo, type ReactNode } from 'react';
 
 export type CartItem = {
   product: CartProduct;
