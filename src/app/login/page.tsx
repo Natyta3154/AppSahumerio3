@@ -2,7 +2,8 @@
 
 import { useActionState } from 'react';
 import { useFormStatus } from 'react-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -18,6 +19,7 @@ import Link from "next/link";
 import { loginAction, type FormState } from './actions';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Terminal, Loader2, Eye, EyeOff } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 const initialState: FormState = {
   message: '',
@@ -42,6 +44,17 @@ function SubmitButton() {
 export default function LoginPage() {
   const [state, formAction] = useActionState(loginAction, initialState);
   const [showPassword, setShowPassword] = useState(false);
+  const searchParams = useSearchParams();
+  const { toast } = useToast();
+
+  useEffect(() => {
+    if (searchParams.get('registered') === 'true') {
+      toast({
+        title: "¡Registro Exitoso!",
+        description: "Tu cuenta ha sido creada. Ya puedes iniciar sesión.",
+      });
+    }
+  }, [searchParams, toast]);
 
   return (
     <div className="flex items-center justify-center min-h-[calc(100vh-10rem)] py-12">

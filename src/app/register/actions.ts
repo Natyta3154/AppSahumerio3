@@ -43,5 +43,5 @@ export async function registerAction(
     return { message: 'No se pudo conectar al servidor. Inténtalo más tarde.', success: false };
   }
 
-  redirect('/login');
+  redirect('/login?registered=true');
 }
