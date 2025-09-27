@@ -4,7 +4,7 @@
 import { useEffect, useRef, useState } from 'react';
 import Autoplay from "embla-carousel-autoplay";
 import { ProductCard } from '@/components/product-card';
-import { type Product } from '@/lib/products';
+import { type Product, getProducts } from '@/lib/products';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
@@ -54,7 +54,6 @@ const getActiveOffer = (product: Product) => {
   });
 };
 
-
 function ProductsLoadingSkeleton() {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
@@ -81,37 +80,26 @@ function FetchErrorAlert() {
     );
 }
 
-export default function Home() {
+// This is the new Server Component that fetches data
+export default async function HomePage() {
+  // Fetch data on the server
+  const { products, error } = await getProducts().then(
+    (data) => ({ products: data, error: null }),
+    (e) => ({ products: [], error: e instanceof Error ? e.message : "An unknown error occurred" })
+  );
+
+  return <HomeClient products={products} error={error} />;
+}
+
+
+// This is your original page, now renamed to HomeClient and receiving data via props
+function HomeClient({ products: allProducts, error }: { products: Product[], error: string | null }) {
   const plugin = useRef(
     Autoplay({ delay: 3000, stopOnInteraction: true })
   );
-
-  const [allProducts, setAllProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    async function fetchProducts() {
-      try {
-        setLoading(true);
-        setError(null);
-        const res = await fetch('https://apisahumerios.onrender.com/productos/listado', { cache: 'no-store' });
-        if (res.ok) {
-          const data = await res.json();
-          setAllProducts(data);
-        } else {
-          throw new Error(`Failed to fetch: ${res.status}`);
-        }
-      } catch (e) {
-        console.error("Failed to fetch products for home page", e);
-        setError(e instanceof Error ? e.message : "An unknown error occurred");
-        setAllProducts([]);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchProducts();
-  }, []);
+  
+  // No more loading state needed here as data is pre-fetched
+  const loading = false;
 
   const featuredProducts = [...allProducts].sort((a, b) => b.precio - a.precio).slice(0, 4);
   const offerProducts = allProducts.filter(p => getActiveOffer(p)).slice(0, 8);
@@ -174,8 +162,8 @@ export default function Home() {
               >
                 <CarouselContent>
                   {offerProducts.map((product) => (
-                    <CarouselItem key={product.id} className="h-full md:basis-1/2 lg:basis-1/3">
-                      <div className='p-1 h-full'>
+                    <CarouselItem key={product.id} className="h-full md:basis-1/2 lg:basis-1/1">
+                      <div className='h-full'>
                          <ProductCard product={product} />
                       </div>
                     </CarouselItem>
