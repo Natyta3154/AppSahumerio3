@@ -10,7 +10,7 @@ export function middleware(request: NextRequest) {
 
   // Si el usuario está logueado y trata de acceder a login/register, lo redirigimos.
   if (isLoggedIn && isAuthRoute) {
-    const redirectUrl = userRole.toUpperCase() === 'ADMIN' ? '/admin' : '/productos';
+    const redirectUrl = userRole?.toUpperCase() === 'ADMIN' ? '/admin' : '/productos';
     return NextResponse.redirect(new URL(redirectUrl, request.url));
   }
 
@@ -22,7 +22,7 @@ export function middleware(request: NextRequest) {
   }
   
   // Si el usuario está logueado pero no es ADMIN e intenta acceder a una ruta de admin, lo redirigimos.
-  if (isLoggedIn && isAdminRoute && userRole.toUpperCase() !== 'ADMIN') {
+  if (isLoggedIn && isAdminRoute && userRole?.toUpperCase() !== 'ADMIN') {
      return NextResponse.redirect(new URL('/productos', request.url));
   }
 
@@ -30,5 +30,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/admin/:path*', '/login', '/register'],
+  matcher: ['/admin/:path*', '/login', '/register', '/admin'],
 }
