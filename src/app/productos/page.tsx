@@ -1,3 +1,4 @@
+
 'use client';
 import { getProducts } from '@/lib/products';
 import ProductFilters from './product-filters';

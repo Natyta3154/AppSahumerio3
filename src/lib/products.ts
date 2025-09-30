@@ -28,7 +28,7 @@ export type Product = {
   ofertas: Offer[];
 };
 
-const API_BASE_URL = '/api';
+const API_BASE_URL = 'https://apisahumerios.onrender.com';
 
 export async function getProducts(): Promise<Product[]> {
   try {

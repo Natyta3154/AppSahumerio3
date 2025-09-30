@@ -21,7 +21,7 @@ export async function registerAction(
   }
 
   try {
-    const response = await fetch('/api/usuarios/registrar', {
+    const response = await fetch('https://apisahumerios.onrender.com/usuarios/registrar', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
