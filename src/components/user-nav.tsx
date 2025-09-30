@@ -85,9 +85,9 @@ export function UserNav() {
   if (!user.isLoggedIn) {
     return (
       <Link href="/login" passHref>
-        <Button variant="ghost" size="icon">
-          <UserIcon className="h-5 w-5" />
-          <span className="sr-only">Iniciar Sesión</span>
+        <Button variant="outline">
+          <UserIcon className="mr-2 h-4 w-4" />
+          Iniciar Sesión
         </Button>
       </Link>
     );

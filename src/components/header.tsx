@@ -24,11 +24,21 @@ export function Header() {
   const { totalItems } = useCart();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
+    setIsClient(true);
     const name = getCookie('user-name');
     setIsLoggedIn(!!name);
   }, []);
+
+  useEffect(() => {
+    if (isClient) {
+        const name = getCookie('user-name');
+        setIsLoggedIn(!!name);
+    }
+  }, [isClient]);
+
 
   return (
     <header className="bg-background/80 backdrop-blur-sm sticky top-0 z-40 border-b">
@@ -53,15 +63,14 @@ export function Header() {
                         <span className="sr-only">Abrir menú</span>
                     </Button>
                 </SheetTrigger>
-                <SheetContent side="left" className="p-0">
-                    <SheetHeader className="p-4">
-                        <SheetTitle className="sr-only">Menú</SheetTitle>
-                        <Link href="/" className="flex items-center gap-2 mb-4" onClick={() => setIsMobileMenuOpen(false)}>
+                <SheetContent side="left" className="w-full max-w-xs p-0">
+                    <SheetHeader className="p-4 border-b">
+                         <Link href="/" className="flex items-center gap-2" onClick={() => setIsMobileMenuOpen(false)}>
                             <Wind className="h-6 w-6 text-primary" />
                             <span className="font-bold text-xl font-headline">AromaCommerce</span>
                         </Link>
+                         <SheetTitle className="sr-only">Menú</SheetTitle>
                     </SheetHeader>
-                    <Separator/>
                     <div className="p-4 flex flex-col h-full">
                         <nav className="flex flex-col gap-4">
                             {navLinks.map(link => (
@@ -71,24 +80,23 @@ export function Header() {
                         <Separator className="my-6"/>
                         <div className="flex flex-col gap-4">
                              <CartSheet>
-                                <Button variant="outline" className="justify-start text-lg h-auto p-0 bg-transparent border-none text-foreground/80 hover:text-primary" onClick={() => setIsMobileMenuOpen(false)}>
+                                <Button variant="ghost" className="justify-start text-lg h-auto p-0 text-foreground/80 hover:text-primary" onClick={() => setIsMobileMenuOpen(false)}>
                                     <ShoppingCart className="mr-3 h-5 w-5" />
                                     Carrito ({totalItems})
                                 </Button>
                             </CartSheet>
-
+                            
                              <Link href={isLoggedIn ? "/profile" : "/login"} className="text-lg text-foreground/80 hover:text-primary transition-colors flex items-center" onClick={() => setIsMobileMenuOpen(false)}>
                                 <User className="mr-3 h-5 w-5"/>
                                 {isLoggedIn ? "Mi Perfil" : "Iniciar Sesión"}
                             </Link>
                         </div>
-
                     </div>
                 </SheetContent>
             </Sheet>
           </div>
 
-          <div className='hidden md:flex items-center gap-2'>
+          <div className='hidden md:flex items-center gap-4'>
             <CartSheet>
               <Button variant="ghost" size="icon" className="relative">
                 <ShoppingBag className="h-5 w-5" />
