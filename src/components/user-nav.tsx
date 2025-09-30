@@ -17,6 +17,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { LayoutDashboard, LogOut, User as UserIcon } from 'lucide-react';
 import { logoutAction } from '@/app/login/actions';
 import { Skeleton } from './ui/skeleton';
+import { useRouter } from 'next/navigation';
 
 type UserState = {
   isLoggedIn: boolean;
@@ -27,12 +28,15 @@ type UserState = {
 
 export function UserNav() {
   const [user, setUser] = useState<UserState | null>(null);
-
+  const [isClient, setIsClient] = useState(false);
+  const router = useRouter();
+  
   useEffect(() => {
+    setIsClient(true);
     const name = getCookie('user-name') || null;
     const role = getCookie('user-role') || null;
     
-    if (name && role) {
+    if (name) {
       const userInitials = name
         .split(' ')
         .map((n) => n[0])
@@ -54,7 +58,14 @@ export function UserNav() {
     }
   }, []);
 
-  if (!user) {
+  const handleLogout = async () => {
+    await logoutAction();
+    setUser({ isLoggedIn: false, userName: null, userRole: null, initials: null });
+    router.push('/');
+    router.refresh(); // Forces a refresh to update server-side state if needed
+  };
+
+  if (!isClient || !user) {
     return <Skeleton className="h-8 w-8 rounded-full" />;
   }
 
@@ -69,7 +80,7 @@ export function UserNav() {
     );
   }
 
-  const isAdmin = user.userRole?.toUpperCase() === 'ADMIN';
+  const isAdmin = user.userRole?.toUpperCase().includes('ADMIN');
 
   return (
     <DropdownMenu>
@@ -106,15 +117,9 @@ export function UserNav() {
           </DropdownMenuItem>
         )}
         <DropdownMenuSeparator />
-        <DropdownMenuItem asChild>
-          <form action={logoutAction} className="w-full">
-            <button type="submit" className="w-full text-left">
-              <div className="flex items-center cursor-pointer">
-                <LogOut className="mr-2 h-4 w-4" />
-                <span>Cerrar Sesión</span>
-              </div>
-            </button>
-          </form>
+        <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
+          <LogOut className="mr-2 h-4 w-4" />
+          <span>Cerrar Sesión</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

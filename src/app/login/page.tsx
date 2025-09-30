@@ -3,7 +3,7 @@
 import { useActionState } from 'react';
 import { useFormStatus } from 'react-dom';
 import { useState, useEffect } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -16,13 +16,24 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
-import { loginAction, type FormState } from './actions';
+import { loginAction } from './actions';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Terminal, Loader2, Eye, EyeOff } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
+export type FormState = {
+  message: string;
+  success?: boolean;
+  user?: {
+    name: string;
+    role: string;
+  } | null;
+};
+
 const initialState: FormState = {
   message: '',
+  success: false,
+  user: null,
 };
 
 function SubmitButton() {
@@ -46,6 +57,7 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const searchParams = useSearchParams();
   const { toast } = useToast();
+  const router = useRouter();
 
   useEffect(() => {
     if (searchParams.get('registered') === 'true') {
@@ -53,8 +65,25 @@ export default function LoginPage() {
         title: "¡Registro Exitoso!",
         description: "Tu cuenta ha sido creada. Ya puedes iniciar sesión.",
       });
+      // Remove the query param from URL
+      router.replace('/login', {scroll: false});
     }
-  }, [searchParams, toast]);
+  }, [searchParams, toast, router]);
+
+  useEffect(() => {
+    if (state.success && state.user) {
+      toast({
+        title: `¡Bienvenido, ${state.user.name}!`,
+        description: 'Has iniciado sesión correctamente.',
+      });
+      
+      const redirectUrl = state.user.role?.toUpperCase().includes('ADMIN') ? '/admin' : '/productos';
+      router.push(redirectUrl);
+
+    } else if (state.message && !state.success) {
+      // Error toast is handled by the Alert component now
+    }
+  }, [state, toast, router]);
 
   return (
     <div className="flex items-center justify-center min-h-[calc(100vh-10rem)] py-12">
@@ -84,7 +113,7 @@ export default function LoginPage() {
                 </button>
               </div>
             </div>
-            {state?.message && (
+            {state?.message && !state.success && (
               <Alert variant="destructive" className="mt-4">
                 <Terminal className="h-4 w-4" />
                 <AlertTitle>Error de Inicio de Sesión</AlertTitle>
