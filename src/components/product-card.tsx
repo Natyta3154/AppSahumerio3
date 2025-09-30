@@ -1,14 +1,14 @@
 'use client';
 import type { Product, ProductVariant } from '@/lib/products';
 import Image from 'next/image';
-import { Button } from './ui/button';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from './ui/card';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { useCart } from '@/hooks/use-cart.tsx';
 import { useToast } from '@/hooks/use-toast';
 import { ShoppingCart, Tag } from 'lucide-react';
 import React, { useState, useMemo } from 'react';
-import { Badge } from './ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import { Badge } from '@/components/ui/badge';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface ProductCardProps {
   product: Product;
@@ -87,7 +87,7 @@ export function ProductCard({ product }: ProductCardProps) {
               <div className="mt-auto space-y-2">
                 <label className="text-sm font-medium text-muted-foreground">Elige una fragancia:</label>
                 <Select
-                  value={selectedVariant?.id.toString() ?? ''}
+                  value={selectedVariant?.id.toString()}
                   onValueChange={(variantId) => {
                     const variant = product.fragancias.find(v => v.id.toString() === variantId);
                     setSelectedVariant(variant);
