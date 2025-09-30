@@ -87,7 +87,7 @@ export function ProductCard({ product }: ProductCardProps) {
               <div className="mt-auto space-y-2">
                 <label className="text-sm font-medium text-muted-foreground">Elige una fragancia:</label>
                 <Select
-                  value={selectedVariant?.id.toString()}
+                  value={selectedVariant?.id?.toString() ?? ''}
                   onValueChange={(variantId) => {
                     const variant = product.fragancias.find(v => v.id.toString() === variantId);
                     setSelectedVariant(variant);
