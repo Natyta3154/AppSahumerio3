@@ -86,7 +86,7 @@ export default function ProductDetailClientPage({ product }: ProductDetailClient
             <div className="mb-8">
               <h2 className="text-lg font-semibold mb-4">Elige una fragancia:</h2>
               <RadioGroup
-                value={selectedVariant?.id.toString()}
+                value={selectedVariant?.id.toString() ?? ''}
                 onValueChange={(variantId) => {
                   const variant = product.fragancias?.find((v) => v.id.toString() === variantId);
                   setSelectedVariant(variant);
