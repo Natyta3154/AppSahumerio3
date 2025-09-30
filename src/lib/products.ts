@@ -28,7 +28,7 @@ export type Product = {
   ofertas: Offer[];
 };
 
-const API_BASE_URL = 'https://apisahumerios.onrender.com';
+const API_BASE_URL = '/api';
 
 export async function getProducts(): Promise<Product[]> {
   try {
@@ -48,7 +48,7 @@ export async function getProducts(): Promise<Product[]> {
 
 export async function getProductById(id: string): Promise<Product | null> {
   try {
-    const res = await fetch(`${API_BASE_URL}/productos/detalle/${id}`, {
+    const res = await fetch(`${API_BASE_URL}/productos/${id}`, {
       cache: 'no-store',
     });
     if (!res.ok) {

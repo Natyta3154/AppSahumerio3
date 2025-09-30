@@ -33,7 +33,6 @@ export async function registerAction(
         // The controller doesn't seem to use the role, but we send it just in case
         rol: "ROLE_USER"
       }),
-      credentials: 'include', // <-- Añadido para enviar cookies
     });
 
     if (!response.ok) {

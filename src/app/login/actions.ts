@@ -85,7 +85,6 @@ export async function logoutAction() {
     const res = await fetch('/api/usuarios/logout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
     });
     if (!res.ok) {
         console.error("Backend logout failed");

@@ -4,7 +4,7 @@
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 
-const API_BASE_URL = 'https://apisahumerios.onrender.com';
+const API_BASE_URL = '/api';
 
 const ProductSchema = z.object({
   id: z.string().optional(),
