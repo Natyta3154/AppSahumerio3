@@ -2,6 +2,7 @@
 'use server';
 
 import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
 import type { FormState } from './page';
 
 export async function loginAction(
@@ -41,20 +42,15 @@ export async function loginAction(
     if (responseData.usuario?.email) {
       cookies().set('user-email', responseData.usuario.email, { path: '/' });
     }
-
-    return {
-      message: '¡Bienvenido!',
-      success: true,
-      user: {
-        name: responseData.usuario.nombre,
-        role: responseData.usuario.rol,
-      }
-    };
-
+    
   } catch (error) {
     console.error('Login error:', error);
     return { message: 'No se pudo conectar al servidor. Inténtalo más tarde.', success: false };
   }
+  
+  // Redirect after successful login
+  const redirectUrl = responseData.usuario?.rol?.toUpperCase().includes('ADMIN') ? '/admin' : '/productos';
+  redirect(redirectUrl);
 }
 
 export async function logoutAction() {

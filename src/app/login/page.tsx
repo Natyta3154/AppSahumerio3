@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useActionState } from 'react';
@@ -20,20 +21,16 @@ import { loginAction } from './actions';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Terminal, Loader2, Eye, EyeOff } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { getCookie } from 'cookies-next';
 
 export type FormState = {
   message: string;
   success?: boolean;
-  user?: {
-    name: string;
-    role: string;
-  } | null;
 };
 
 const initialState: FormState = {
   message: '',
   success: false,
-  user: null,
 };
 
 function SubmitButton() {
@@ -68,20 +65,25 @@ export default function LoginPage() {
       // Remove the query param from URL
       router.replace('/login', {scroll: false});
     }
+
+    const justLoggedIn = searchParams.get('loggedin') === 'true';
+    const userName = getCookie('user-name');
+    if (justLoggedIn && userName) {
+       toast({
+        title: `¡Bienvenido, ${userName}!`,
+        description: 'Has iniciado sesión correctamente.',
+      });
+      router.replace(searchParams.get('from') || '/', {scroll: false});
+    }
+
   }, [searchParams, toast, router]);
 
   useEffect(() => {
-    if (state.success && state.user) {
-      toast({
-        title: `¡Bienvenido, ${state.user.name}!`,
-        description: 'Has iniciado sesión correctamente.',
-      });
-      
-      const redirectUrl = state.user.role?.toUpperCase().includes('ADMIN') ? '/admin' : '/productos';
-      router.push(redirectUrl);
-
-    } else if (state.message && !state.success) {
-      // Error toast is handled by the Alert component now
+    // This effect handles the outcome of the form submission.
+    // Since the action now redirects, a successful state change might not be seen here
+    // before the redirect happens. We keep the error handling.
+    if (state.message && !state.success) {
+      // Error is displayed via the Alert component.
     }
   }, [state, toast, router]);
 
