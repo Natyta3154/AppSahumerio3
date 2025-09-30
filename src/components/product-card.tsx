@@ -97,7 +97,7 @@ export function ProductCard({ product }: ProductCardProps) {
                     <SelectValue placeholder="Seleccionar aroma" />
                   </SelectTrigger>
                   <SelectContent>
-                    {product.fragancias.map((variant) => (
+                    {product.fragancias.filter(variant => variant.id != null).map((variant) => (
                       <SelectItem key={variant.id} value={variant.id.toString()}>
                         {variant.nombre}
                       </SelectItem>
