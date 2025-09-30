@@ -29,7 +29,8 @@ export async function registerAction(
         nombre: name,
         email, 
         password,
-        rol: "ROLE_USER" // Hardcoded as requested
+        // The controller doesn't seem to use the role, but we send it just in case
+        rol: "ROLE_USER"
       }),
     });
 

@@ -84,7 +84,7 @@ export default function LoginPage() {
                 </button>
               </div>
             </div>
-            {state.message && (
+            {state?.message && (
               <Alert variant="destructive" className="mt-4">
                 <Terminal className="h-4 w-4" />
                 <AlertTitle>Error de Inicio de Sesión</AlertTitle>
