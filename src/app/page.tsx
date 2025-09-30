@@ -67,15 +67,14 @@ function ProductsLoadingSkeleton() {
   );
 }
 
-function FetchErrorAlert({ error }: { error: string }) {
+function FetchErrorAlert({ error }: { error: string | null }) {
     return (
         <Alert variant="destructive">
             <AlertTriangle className="h-4 w-4" />
             <AlertTitle>Error al Cargar Productos</AlertTitle>
             <AlertDescription>
                 No pudimos cargar los productos en este momento. Esto puede deberse a un problema de red o de configuración del servidor (CORS).
-                <br />
-                <strong>Detalle:</strong> {error}
+                {error && <><br /><strong>Detalle:</strong> {error}</>}
             </AlertDescription>
         </Alert>
     );
