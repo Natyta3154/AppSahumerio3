@@ -41,13 +41,13 @@ export async function loginAction(
     
     // The backend now sends user data directly in cookies, we can remove manual setting
     if (responseData.usuario?.rol) {
-      cookies().set('user-role', responseData.usuario.rol, { httpOnly: true, path: '/' });
+      cookies().set('user-role', responseData.usuario.rol, { path: '/' });
     }
     if (responseData.usuario?.nombre) {
-      cookies().set('user-name', responseData.usuario.nombre, { httpOnly: true, path: '/' });
+      cookies().set('user-name', responseData.usuario.nombre, { path: '/' });
     }
     if (responseData.usuario?.email) {
-      cookies().set('user-email', responseData.usuario.email, { httpOnly: true, path: '/' });
+      cookies().set('user-email', responseData.usuario.email, { path: '/' });
     }
 
   } catch (error) {
@@ -72,13 +72,14 @@ export async function loginAction(
 export async function logoutAction() {
   // We need to call the backend to clear the HttpOnly cookie
   try {
-     await fetch('https://apisahumerios.onrender.com/usuarios/logout', {
+     const res = await fetch('https://apisahumerios.onrender.com/usuarios/logout', {
         method: 'POST',
-        headers: {
-            // Include credentials to send cookies
-            'Credentials': 'include'
-        }
+        headers: { 'Content-Type': 'application/json' },
     });
+    if (!res.ok) {
+        // Even if backend fails, clear client cookies as fallback
+        console.error("Backend logout failed");
+    }
   } catch (error) {
     console.error("Logout error", error);
   } finally {
