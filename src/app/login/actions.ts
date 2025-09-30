@@ -60,20 +60,13 @@ export async function loginAction(
     cookies().set('user-email', user.email, { path: '/' });
     cookies().set('user-role', user.rol, { path: '/' });
 
-    // This is the important part: Redirect within the server action
+    // Return success state, the component will handle the refresh
+    return { message: 'Login successful', success: true };
+
   } catch (error) {
     console.error('Login error:', error);
-    if (error instanceof TypeError && error.message.includes('redirect')) {
-        // This is an expected error when redirecting. We can swallow it.
-        throw error;
-    }
     return { message: 'No se pudo conectar al servidor. Inténtalo más tarde.', success: false };
   }
-  
-  // Determine redirect URL based on role and redirect
-  const userRole = cookies().get('user-role')?.value;
-  const redirectUrl = userRole?.toUpperCase().includes('ADMIN') ? '/admin' : '/';
-  redirect(redirectUrl);
 }
 
 

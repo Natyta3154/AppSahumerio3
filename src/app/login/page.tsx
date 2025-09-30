@@ -51,15 +51,25 @@ export default function LoginPage() {
   const router = useRouter();
 
   useEffect(() => {
+    // This effect handles the post-registration toast message
     const registered = searchParams.get('registered');
     if (registered === 'true') {
       toast({
         title: "¡Registro Exitoso!",
         description: "Tu cuenta ha sido creada. Ya puedes iniciar sesión.",
       });
+      // Use router.replace to remove the query param from the URL without adding to history
       router.replace('/login', {scroll: false});
     }
   }, [searchParams, toast, router]);
+
+  useEffect(() => {
+    // This effect handles the post-login refresh
+    if (state.success) {
+      // The middleware will handle the actual redirection
+      router.refresh();
+    }
+  }, [state.success, router]);
 
   return (
     <div className="flex items-center justify-center min-h-[calc(100vh-10rem)] py-12">
