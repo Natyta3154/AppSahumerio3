@@ -1,3 +1,4 @@
+
 export type Offer = {
   idOferta: number;
   valorDescuento: number;
@@ -27,28 +28,27 @@ export type Product = {
   ofertas: Offer[];
 };
 
+const API_BASE_URL = 'https://apisahumerios.onrender.com';
+
 export async function getProducts(): Promise<Product[]> {
   try {
-    const res = await fetch('/api/productos/listado', {
+    const res = await fetch(`${API_BASE_URL}/productos/listado`, {
       cache: 'no-store',
-    
     });
     if (!res.ok) {
-      // Lanza un error más descriptivo
       throw new Error(`Failed to fetch products: ${res.status} ${res.statusText}`);
     }
     const products = await res.json();
     return products;
   } catch (error) {
     console.error("Error fetching products:", error);
-    // Relanza el error para que pueda ser capturado por los componentes que llaman a esta función
     throw error;
   }
 }
 
 export async function getProductById(id: string): Promise<Product | null> {
   try {
-    const res = await fetch(`/api/productos/detalle/${id}`, {
+    const res = await fetch(`${API_BASE_URL}/productos/detalle/${id}`, {
       cache: 'no-store',
     });
     if (!res.ok) {

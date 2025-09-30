@@ -30,7 +30,7 @@ export type FormState = {
 async function apiRequest(url: string, options: RequestInit) {
   const response = await fetch(url, {
     ...options,
-    credentials: 'include' // <-- Añadido para enviar cookies
+    credentials: 'include'
   });
   if (!response.ok) {
     const errorBody = await response.json().catch(() => ({ message: 'Error en la operación en el servidor.' }));
@@ -101,7 +101,6 @@ export async function deleteProductAction(productId: number): Promise<{ message:
     try {
         const response = await fetch(`/api/productos/eliminar/${productId}`, {
             method: 'DELETE',
-            credentials: 'include' // <-- Añadido para enviar cookies
         });
 
         if (!response.ok) {
