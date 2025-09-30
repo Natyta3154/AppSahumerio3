@@ -1,5 +1,7 @@
 import { getProducts, type Product } from '@/lib/products';
 import { ProductCard } from '@/components/product-card';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { AlertTriangle } from 'lucide-react';
 
 const getActiveOffer = (product: Product) => {
   if (!product.ofertas || product.ofertas.length === 0) return undefined;
@@ -13,8 +15,25 @@ const getActiveOffer = (product: Product) => {
   });
 };
 
+function FetchErrorAlert({ error }: { error: string | null }) {
+  return (
+      <Alert variant="destructive">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertTitle>Error al Cargar Ofertas</AlertTitle>
+          <AlertDescription>
+              No pudimos cargar las ofertas en este momento. Esto puede deberse a un problema de red o de configuración del servidor (CORS).
+              {error && <><br /><strong>Detalle:</strong> {error}</>}
+          </AlertDescription>
+      </Alert>
+  );
+}
+
 export default async function OfertasPage() {
-  const allProducts: Product[] = await getProducts();
+  const { products: allProducts, error } = await getProducts().then(
+    (data) => ({ products: data, error: null }),
+    (e) => ({ products: [], error: e instanceof Error ? e.message : "An unknown error occurred" })
+  );
+  
   const offerProducts = allProducts.filter(product => getActiveOffer(product));
 
   return (
@@ -28,7 +47,9 @@ export default async function OfertasPage() {
         </p>
       </div>
       
-      {offerProducts.length > 0 ? (
+      {error ? (
+        <FetchErrorAlert error={error} />
+      ) : offerProducts.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
           {offerProducts.map((product) => (
             <ProductCard key={product.id} product={product} />
