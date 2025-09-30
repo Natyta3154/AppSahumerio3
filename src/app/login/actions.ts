@@ -39,6 +39,7 @@ export async function loginAction(
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ email, password }),
+      credentials: 'include', // <-- Añadido para enviar cookies
     });
 
     const responseData = await response.json();
@@ -68,6 +69,7 @@ export async function logoutAction() {
     const res = await fetch('https://apisahumerios.onrender.com/usuarios/logout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include', // <-- Añadido para enviar cookies
     });
     if (!res.ok) {
         console.error("Backend logout failed");
@@ -77,3 +79,4 @@ export async function logoutAction() {
   }
   // Las cookies del lado del cliente para la UI se borrarán en el componente UserNav
 }
+

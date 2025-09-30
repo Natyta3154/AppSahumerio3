@@ -1,3 +1,4 @@
+
 export type Offer = {
   idOferta: number;
   valorDescuento: number;
@@ -30,7 +31,8 @@ export type Product = {
 export async function getProducts(): Promise<Product[]> {
   try {
     const res = await fetch('https://apisahumerios.onrender.com/productos/listado', {
-      cache: 'no-store'
+      cache: 'no-store',
+      credentials: 'include' // <-- Añadido para enviar cookies
     });
     if (!res.ok) {
       throw new Error('Failed to fetch products');
@@ -39,6 +41,7 @@ export async function getProducts(): Promise<Product[]> {
     return products;
   } catch (error) {
     console.error("Error fetching products:", error);
+    // Devolvemos un array vacío en caso de error para no romper la UI
     return [];
   }
 }

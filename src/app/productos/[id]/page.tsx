@@ -1,3 +1,4 @@
+
 'use client';
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
@@ -41,7 +42,10 @@ export default function ProductDetailPage() {
     async function fetchProduct() {
       try {
         setLoading(true);
-        const res = await fetch(`https://apisahumerios.onrender.com/productos/listado`, { cache: 'no-store' });
+        const res = await fetch(`https://apisahumerios.onrender.com/productos/listado`, { 
+          cache: 'no-store',
+          credentials: 'include' // <-- Añadido para enviar cookies
+        });
         const products = await res.json();
         const foundProduct = products.find((p: Product) => p.id.toString() === params.id);
         setProduct(foundProduct || null);

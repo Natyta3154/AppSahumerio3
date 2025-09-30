@@ -1,3 +1,4 @@
+
 'use server';
 
 import { revalidatePath } from 'next/cache';
@@ -27,7 +28,10 @@ export type FormState = {
 
 // Generic API fetch function
 async function apiRequest(url: string, options: RequestInit) {
-  const response = await fetch(url, options);
+  const response = await fetch(url, {
+    ...options,
+    credentials: 'include' // <-- Añadido para enviar cookies
+  });
   if (!response.ok) {
     const errorBody = await response.json().catch(() => ({ message: 'Error en la operación en el servidor.' }));
     throw new Error(errorBody.message || 'Ocurrió un error inesperado.');
@@ -97,6 +101,7 @@ export async function deleteProductAction(productId: number): Promise<{ message:
     try {
         const response = await fetch(`https://apisahumerios.onrender.com/productos/eliminar/${productId}`, {
             method: 'DELETE',
+            credentials: 'include' // <-- Añadido para enviar cookies
         });
 
         if (!response.ok) {
