@@ -35,14 +35,15 @@ export async function getProducts(): Promise<Product[]> {
       credentials: 'include' // <-- Añadido para enviar cookies
     });
     if (!res.ok) {
-      throw new Error('Failed to fetch products');
+      // Lanza un error más descriptivo
+      throw new Error(`Failed to fetch products: ${res.status} ${res.statusText}`);
     }
     const products = await res.json();
     return products;
   } catch (error) {
     console.error("Error fetching products:", error);
-    // Devolvemos un array vacío en caso de error para no romper la UI
-    return [];
+    // Relanza el error para que pueda ser capturado por los componentes que llaman a esta función
+    throw error;
   }
 }
 
@@ -57,3 +58,4 @@ export async function getProductById(id: string): Promise<Product | null> {
     return null;
   }
 }
+

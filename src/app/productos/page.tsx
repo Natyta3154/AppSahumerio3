@@ -9,7 +9,8 @@ function FetchErrorAlert({ error }: { error: string | null }) {
           <AlertTriangle className="h-4 w-4" />
           <AlertTitle>Error al Cargar Productos</AlertTitle>
           <AlertDescription>
-              No pudimos cargar los productos en este momento. {error && `Detalle: ${error}`}
+              No pudimos cargar los productos en este momento. Esto puede deberse a un problema de red o de configuración del servidor (CORS).
+              {error && <><br /><strong>Detalle:</strong> {error}</>}
           </AlertDescription>
       </Alert>
   );
