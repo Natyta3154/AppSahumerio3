@@ -29,7 +29,7 @@ export type Product = {
 
 export async function getProducts(): Promise<Product[]> {
   try {
-    const res = await fetch('https://apisahumerios.onrender.com/productos/listado', {
+    const res = await fetch('/api/productos/listado', {
       cache: 'no-store',
     
     });
@@ -48,7 +48,7 @@ export async function getProducts(): Promise<Product[]> {
 
 export async function getProductById(id: string): Promise<Product | null> {
   try {
-    const res = await fetch(`https://apisahumerios.onrender.com/productos/detalle/${id}`, {
+    const res = await fetch(`/api/productos/detalle/${id}`, {
       cache: 'no-store',
     });
     if (!res.ok) {

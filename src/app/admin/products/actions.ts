@@ -62,8 +62,8 @@ export async function upsertProductAction(prevState: FormState, formData: FormDa
 
   const isEditing = !!id;
   const url = isEditing
-    ? `https://apisahumerios.onrender.com/productos/editar/${id}`
-    : 'https://apisahumerios.onrender.com/productos/agregar';
+    ? `/api/productos/editar/${id}`
+    : '/api/productos/agregar';
 
   const bodyForApi = isEditing
     ? { ...productData }
@@ -99,7 +99,7 @@ export async function deleteProductAction(productId: number): Promise<{ message:
     }
     
     try {
-        const response = await fetch(`https://apisahumerios.onrender.com/productos/eliminar/${productId}`, {
+        const response = await fetch(`/api/productos/eliminar/${productId}`, {
             method: 'DELETE',
             credentials: 'include' // <-- Añadido para enviar cookies
         });

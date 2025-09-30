@@ -29,7 +29,7 @@ export async function loginAction(
 
   let responseData;
   try {
-    const response = await fetch('https://apisahumerios.onrender.com/usuarios/login', {
+    const response = await fetch('/api/usuarios/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -82,7 +82,7 @@ export async function loginAction(
 
 export async function logoutAction() {
   try {
-    const res = await fetch('https://apisahumerios.onrender.com/usuarios/logout', {
+    const res = await fetch('/api/usuarios/logout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
