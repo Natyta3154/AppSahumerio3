@@ -7,11 +7,6 @@ import { redirect } from 'next/navigation';
 export type LoginSuccessState = {
   success: true;
   message: string;
-  user: {
-    nombre: string;
-    email: string;
-    rol: string;
-  };
 };
 
 export type LoginErrorState = {
@@ -39,37 +34,55 @@ export async function loginAction(
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ email, password }),
-      credentials: 'include', // <-- Añadido para enviar cookies
     });
+
+    // Extract Set-Cookie header from the backend response
+    const setCookieHeader = response.headers.get('Set-Cookie');
+    if (setCookieHeader) {
+        cookies().set('token', setCookieHeader.split(';')[0].split('=')[1], {
+            httpOnly: true,
+            secure: true,
+            sameSite: 'none',
+            path: '/',
+        });
+    }
 
     const responseData = await response.json();
 
     if (!response.ok) {
       return { message: responseData.error || 'Error al iniciar sesión. Verifica tus credenciales.', success: false };
     }
+    
+    const user = responseData.usuario;
 
-    // El backend establece la cookie HttpOnly.
-    // El frontend solo recibe los datos del usuario para la UI.
-    return {
-      success: true,
-      message: 'Inicio de sesión exitoso.',
-      user: responseData.usuario,
-    };
+    // Set client-side cookies for UI purposes
+    cookies().set('user-name', user.nombre, { path: '/' });
+    cookies().set('user-email', user.email, { path: '/' });
+    cookies().set('user-role', user.rol, { path: '/' });
 
+    // This is the important part: Redirect within the server action
   } catch (error) {
     console.error('Login error:', error);
+    if (error instanceof TypeError && error.message.includes('redirect')) {
+        // This is an expected error when redirecting. We can swallow it.
+        throw error;
+    }
     return { message: 'No se pudo conectar al servidor. Inténtalo más tarde.', success: false };
   }
+  
+  // Determine redirect URL based on role and redirect
+  const userRole = cookies().get('user-role')?.value;
+  const redirectUrl = userRole?.toUpperCase().includes('ADMIN') ? '/admin' : '/';
+  redirect(redirectUrl);
 }
 
 
 export async function logoutAction() {
   try {
-    // Llama al backend para que borre su cookie HttpOnly
     const res = await fetch('https://apisahumerios.onrender.com/usuarios/logout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include', // <-- Añadido para enviar cookies
+        credentials: 'include',
     });
     if (!res.ok) {
         console.error("Backend logout failed");
@@ -77,6 +90,12 @@ export async function logoutAction() {
   } catch (error) {
     console.error("Logout error", error);
   }
-  // Las cookies del lado del cliente para la UI se borrarán en el componente UserNav
-}
+  
+  // Clear all relevant cookies
+  cookies().delete('token');
+  cookies().delete('user-name');
+  cookies().delete('user-email');
+  cookies().delete('user-role');
 
+  redirect('/');
+}

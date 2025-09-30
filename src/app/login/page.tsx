@@ -21,7 +21,6 @@ import { loginAction, type LoginFormState } from './actions';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Terminal, Loader2, Eye, EyeOff } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { setCookie } from 'cookies-next';
 
 const initialState: LoginFormState = {
   message: '',
@@ -52,37 +51,15 @@ export default function LoginPage() {
   const router = useRouter();
 
   useEffect(() => {
-    // Muestra un toast si viene de la página de registro
     const registered = searchParams.get('registered');
     if (registered === 'true') {
       toast({
         title: "¡Registro Exitoso!",
         description: "Tu cuenta ha sido creada. Ya puedes iniciar sesión.",
       });
-      // Limpia el parámetro de la URL para no volver a mostrarlo
       router.replace('/login', {scroll: false});
     }
   }, [searchParams, toast, router]);
-
-  useEffect(() => {
-    if (state.success && state.user) {
-      // 1. Guardar cookies del lado del cliente para la UI
-      setCookie('user-name', state.user.nombre, { path: '/' });
-      setCookie('user-email', state.user.email, { path: '/' });
-      setCookie('user-role', state.user.rol, { path: '/' });
-
-      // 2. Mostrar toast de bienvenida
-      toast({
-        title: `¡Bienvenido, ${state.user.nombre}!`,
-        description: 'Has iniciado sesión correctamente.',
-      });
-
-      // 3. Refrescar la página. El middleware se encargará de la redirección.
-      // Esto evita conflictos entre router.push y la lógica del middleware.
-      router.refresh();
-
-    }
-  }, [state, toast, router]);
 
   return (
     <div className="flex items-center justify-center min-h-[calc(100vh-10rem)] py-12">

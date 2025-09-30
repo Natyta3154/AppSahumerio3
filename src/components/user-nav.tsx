@@ -2,7 +2,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { getCookie, deleteCookie } from 'cookies-next';
+import { getCookie } from 'cookies-next';
 import Link from 'next/link';
 import {
   DropdownMenu,
@@ -17,7 +17,8 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { LayoutDashboard, LogOut, User as UserIcon } from 'lucide-react';
 import { logoutAction } from '@/app/login/actions';
 import { Skeleton } from './ui/skeleton';
-import { useRouter } from 'next/navigation';
+import { useFormStatus } from 'react-dom';
+
 
 type UserState = {
   isLoggedIn: boolean;
@@ -26,12 +27,21 @@ type UserState = {
   initials: string | null;
 };
 
+function LogoutMenuItem() {
+    const { pending } = useFormStatus();
+
+    return (
+        <DropdownMenuItem disabled={pending} onClick={() => {}} className="cursor-pointer">
+            <LogOut className="mr-2 h-4 w-4" />
+            <span>{pending ? "Cerrando sesión..." : "Cerrar Sesión"}</span>
+        </DropdownMenuItem>
+    )
+}
+
 export function UserNav() {
   const [user, setUser] = useState<UserState | null>(null);
-  const router = useRouter();
   
   useEffect(() => {
-    // This effect only runs on the client, after hydration
     const name = getCookie('user-name') || null;
     const role = getCookie('user-role') || null;
     
@@ -57,24 +67,6 @@ export function UserNav() {
     }
   }, []);
 
-  const handleLogout = async () => {
-    // 1. Call backend to invalidate HttpOnly cookie
-    await logoutAction();
-
-    // 2. Delete client-side cookies
-    deleteCookie('user-name', { path: '/' });
-    deleteCookie('user-email', { path: '/' });
-    deleteCookie('user-role', { path: '/' });
-
-    // 3. Update local state
-    setUser({ isLoggedIn: false, userName: null, userRole: null, initials: null });
-
-    // 4. Redirect and refresh
-    router.push('/');
-    router.refresh();
-  };
-
-  // Render a skeleton while waiting for client-side hydration
   if (user === null) {
     return <Skeleton className="h-8 w-8 rounded-full" />;
   }
@@ -127,10 +119,9 @@ export function UserNav() {
           </DropdownMenuItem>
         )}
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
-          <LogOut className="mr-2 h-4 w-4" />
-          <span>Cerrar Sesión</span>
-        </DropdownMenuItem>
+        <form action={logoutAction}>
+            <LogoutMenuItem />
+        </form>
       </DropdownMenuContent>
     </DropdownMenu>
   );
