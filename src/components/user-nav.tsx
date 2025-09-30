@@ -28,13 +28,10 @@ type UserState = {
 
 export function UserNav() {
   const [user, setUser] = useState<UserState | null>(null);
-  const [isClient, setIsClient] = useState(false);
   const router = useRouter();
   
   useEffect(() => {
-    // Este efecto solo se ejecuta en el cliente
-    setIsClient(true);
-    
+    // This effect only runs on the client, after hydration
     const name = getCookie('user-name') || null;
     const role = getCookie('user-role') || null;
     
@@ -61,24 +58,24 @@ export function UserNav() {
   }, []);
 
   const handleLogout = async () => {
-    // 1. Llamar al backend para invalidar la cookie HttpOnly
+    // 1. Call backend to invalidate HttpOnly cookie
     await logoutAction();
 
-    // 2. Borrar las cookies del lado del cliente
+    // 2. Delete client-side cookies
     deleteCookie('user-name', { path: '/' });
     deleteCookie('user-email', { path: '/' });
     deleteCookie('user-role', { path: '/' });
 
-    // 3. Actualizar el estado local
+    // 3. Update local state
     setUser({ isLoggedIn: false, userName: null, userRole: null, initials: null });
 
-    // 4. Redirigir y refrescar
+    // 4. Redirect and refresh
     router.push('/');
     router.refresh();
   };
 
-  // Muestra un esqueleto de carga hasta que el cliente se hidrate
-  if (!isClient || user === null) {
+  // Render a skeleton while waiting for client-side hydration
+  if (user === null) {
     return <Skeleton className="h-8 w-8 rounded-full" />;
   }
 

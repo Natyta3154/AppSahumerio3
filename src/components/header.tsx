@@ -28,8 +28,6 @@ export function Header() {
 
   useEffect(() => {
     setIsClient(true);
-    const name = getCookie('user-name');
-    setIsLoggedIn(!!name);
   }, []);
 
   useEffect(() => {
