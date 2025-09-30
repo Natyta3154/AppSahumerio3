@@ -54,8 +54,7 @@ export async function getProductById(id: string): Promise<Product | null> {
     const product = products.find((p) => p.id.toString() === id);
     return product || null;
   } catch (error) {
-    console.error(`Error fetching product with id ${id}:`, error);
-    return null;
+    console.error(`Error fetching product by id ${id}:`, error);
+    throw error;
   }
 }
-
