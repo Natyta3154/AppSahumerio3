@@ -1,8 +1,5 @@
+'use server';
 
-'use client';
-
-import { useEffect, useRef, useState } from 'react';
-import Autoplay from "embla-carousel-autoplay";
 import { ProductCard } from '@/components/product-card';
 import { getProducts, type Product } from '@/lib/products';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
@@ -12,7 +9,6 @@ import Link from 'next/link';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowRight, Tag, AlertTriangle } from 'lucide-react';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
-import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 const blogPosts = [
@@ -54,57 +50,28 @@ const getActiveOffer = (product: Product) => {
   });
 };
 
-function ProductsLoadingSkeleton() {
-  return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-      {Array.from({ length: 4 }).map((_, i) => (
-        <div key={i} className="space-y-2">
-          <Skeleton className="h-48 w-full" />
-          <Skeleton className="h-4 w-3/4" />
-          <Skeleton className="h-4 w-1/2" />
-        </div>
-      ))}
-    </div>
-  );
-}
-
 function FetchErrorAlert({ error }: { error: string | null }) {
     return (
         <Alert variant="destructive">
             <AlertTriangle className="h-4 w-4" />
             <AlertTitle>Error al Cargar Productos</AlertTitle>
             <AlertDescription>
-                No pudimos cargar los productos en este momento. Esto puede deberse a un problema de red o de configuración del servidor (CORS).
+                No pudimos cargar los productos en este momento. Esto puede deberse a un problema de red o de configuración del servidor.
                 {error && <><br /><strong>Detalle:</strong> {error}</>}
             </AlertDescription>
         </Alert>
     );
 }
 
-export default function HomePage() {
-  const plugin = useRef(
-    Autoplay({ delay: 3000, stopOnInteraction: true })
-  );
-  
-  const [allProducts, setAllProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+export default async function HomePage() {
+  let allProducts: Product[] = [];
+  let error: string | null = null;
 
-  useEffect(() => {
-    async function loadProducts() {
-      try {
-        setLoading(true);
-        setError(null);
-        const products = await getProducts();
-        setAllProducts(products);
-      } catch (e) {
-        setError(e instanceof Error ? e.message : "An unknown error occurred");
-      } finally {
-        setLoading(false);
-      }
-    }
-    loadProducts();
-  }, []);
+  try {
+    allProducts = await getProducts();
+  } catch (e) {
+    error = e instanceof Error ? e.message : "An unknown error occurred";
+  }
 
   const featuredProducts = [...allProducts].sort((a, b) => b.precio - a.precio).slice(0, 4);
   const offerProducts = allProducts.filter(p => getActiveOffer(p)).slice(0, 8);
@@ -149,17 +116,12 @@ export default function HomePage() {
                   Aprovecha estos descuentos exclusivos por tiempo limitado.
               </p>
           </div>
-          {loading ? (
-             <div className="flex justify-center"><ProductsLoadingSkeleton/></div>
-          ) : error ? (
+          {error ? (
               <FetchErrorAlert error={error} />
           ) : offerProducts.length > 0 ? (
             <div className="flex justify-center">
               <Carousel
-                plugins={[plugin.current]}
                 className="w-full"
-                onMouseEnter={plugin.current.stop}
-                onMouseLeave={plugin.current.reset}
                 opts={{
                   align: "start",
                   loop: offerProducts.length > 1,
@@ -185,9 +147,7 @@ export default function HomePage() {
         
         <section className="mb-16">
           <h2 className="text-3xl font-headline font-bold mb-8 text-center border-b-2 border-primary/20 pb-4">Productos Premium</h2>
-          {loading ? (
-            <ProductsLoadingSkeleton />
-          ) : error ? (
+          {error ? (
             <FetchErrorAlert error={error} />
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
