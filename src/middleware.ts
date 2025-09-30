@@ -17,6 +17,7 @@ export function middleware(request: NextRequest) {
   // 1. Proteger rutas de admin y perfil
   if (isAdminRoute) {
     if (!isLoggedIn || !userRole?.toUpperCase().includes('ADMIN')) {
+      // Si no es admin y trata de acceder a /admin, lo mandamos a login
       return NextResponse.redirect(new URL('/login', request.url));
     }
   }
