@@ -65,19 +65,26 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (state.success && state.user) {
-      // Guardar cookies del lado del cliente para la UI
+      // 1. Guardar cookies del lado del cliente para la UI
       setCookie('user-name', state.user.nombre, { path: '/' });
       setCookie('user-email', state.user.email, { path: '/' });
       setCookie('user-role', state.user.rol, { path: '/' });
 
-      // Mostrar toast de bienvenida
+      // 2. Mostrar toast de bienvenida
       toast({
         title: `¡Bienvenido, ${state.user.nombre}!`,
         description: 'Has iniciado sesión correctamente.',
       });
 
-      // Forzar un refresco de la página. El middleware se encargará de la redirección.
-      router.refresh();
+      // 3. Redirigir según el rol
+      const isAdmin = state.user.rol.toUpperCase().includes('ADMIN');
+      const redirectUrl = isAdmin ? '/admin' : '/';
+      router.push(redirectUrl);
+      
+      // Se necesita un refresh para que el layout y el middleware se actualicen
+      // con las nuevas cookies. Damos un pequeño delay para que la redirección comience.
+      setTimeout(() => router.refresh(), 50);
+
     }
   }, [state, toast, router]);
 
