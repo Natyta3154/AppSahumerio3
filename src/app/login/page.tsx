@@ -76,10 +76,8 @@ export default function LoginPage() {
         description: 'Has iniciado sesión correctamente.',
       });
 
-      // Redirigir basado en el rol del usuario, ignorando la redirección del backend
-      const redirectUrl = state.user.rol?.toUpperCase().includes('ADMIN') ? '/admin' : '/productos';
-      router.push(redirectUrl);
-      router.refresh(); // Importante para que el header se actualice
+      // Forzar un refresco de la página. El middleware se encargará de la redirección.
+      router.refresh();
     }
   }, [state, toast, router]);
 
