@@ -103,18 +103,17 @@ export function UserNav() {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        {isAdmin ? (
+        <DropdownMenuItem asChild>
+          <Link href="/profile">
+            <UserIcon className="mr-2 h-4 w-4" />
+            <span>Mi Perfil</span>
+          </Link>
+        </DropdownMenuItem>
+        {isAdmin && (
           <DropdownMenuItem asChild>
             <Link href="/admin">
               <LayoutDashboard className="mr-2 h-4 w-4" />
               <span>Panel de Admin</span>
-            </Link>
-          </DropdownMenuItem>
-        ) : (
-          <DropdownMenuItem asChild>
-            <Link href="/profile">
-              <UserIcon className="mr-2 h-4 w-4" />
-              <span>Mi Perfil</span>
             </Link>
           </DropdownMenuItem>
         )}
@@ -126,3 +125,4 @@ export function UserNav() {
     </DropdownMenu>
   );
 }
+
