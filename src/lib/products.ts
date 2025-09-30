@@ -32,7 +32,7 @@ export async function getProducts(): Promise<Product[]> {
   try {
     const res = await fetch('https://apisahumerios.onrender.com/productos/listado', {
       cache: 'no-store',
-      credentials: 'include' // <-- Añadido para enviar cookies
+    
     });
     if (!res.ok) {
       // Lanza un error más descriptivo
