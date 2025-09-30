@@ -76,14 +76,9 @@ export default function LoginPage() {
         description: 'Has iniciado sesión correctamente.',
       });
 
-      // 3. Redirigir según el rol
-      const isAdmin = state.user.rol.toUpperCase().includes('ADMIN');
-      const redirectUrl = isAdmin ? '/admin' : '/';
-      router.push(redirectUrl);
-      
-      // Se necesita un refresh para que el layout y el middleware se actualicen
-      // con las nuevas cookies. Damos un pequeño delay para que la redirección comience.
-      setTimeout(() => router.refresh(), 50);
+      // 3. Refrescar la página. El middleware se encargará de la redirección.
+      // Esto evita conflictos entre router.push y la lógica del middleware.
+      router.refresh();
 
     }
   }, [state, toast, router]);
