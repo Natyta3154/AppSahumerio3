@@ -27,6 +27,7 @@ export async function loginAction(
     return { message: 'Por favor, introduce el email y la contraseña.', success: false };
   }
 
+  let responseData;
   try {
     const response = await fetch('https://apisahumerios.onrender.com/usuarios/login', {
       method: 'POST',
@@ -36,37 +37,46 @@ export async function loginAction(
       body: JSON.stringify({ email, password }),
     });
 
-    // Extract Set-Cookie header from the backend response
+    // Extraer la cookie 'token' de la respuesta del backend
     const setCookieHeader = response.headers.get('Set-Cookie');
     if (setCookieHeader) {
-        cookies().set('token', setCookieHeader.split(';')[0].split('=')[1], {
-            httpOnly: true,
-            secure: true,
-            sameSite: 'none',
-            path: '/',
+      // Extraemos solo el valor del token
+      const tokenValue = setCookieHeader.split(';')[0].split('=')[1];
+      if (tokenValue) {
+        cookies().set('token', tokenValue, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'lax', // 'lax' es más compatible que 'none' en muchos casos
+          path: '/',
         });
+      }
     }
 
-    const responseData = await response.json();
+    responseData = await response.json();
 
     if (!response.ok) {
       return { message: responseData.error || 'Error al iniciar sesión. Verifica tus credenciales.', success: false };
     }
-    
-    const user = responseData.usuario;
-
-    // Set client-side cookies for UI purposes
-    cookies().set('user-name', user.nombre, { path: '/' });
-    cookies().set('user-email', user.email, { path: '/' });
-    cookies().set('user-role', user.rol, { path: '/' });
-
-    // Return success state, the component will handle the refresh
-    return { message: 'Login successful', success: true };
 
   } catch (error) {
     console.error('Login error:', error);
     return { message: 'No se pudo conectar al servidor. Inténtalo más tarde.', success: false };
   }
+  
+  // Si la autenticación fue exitosa, procedemos
+  const user = responseData.usuario;
+  if (!user || !user.rol) {
+      return { message: 'Respuesta inesperada del servidor.', success: false };
+  }
+
+  // Establecer cookies del lado del cliente para la UI
+  cookies().set('user-name', user.nombre, { path: '/' });
+  cookies().set('user-email', user.email, { path: '/' });
+  cookies().set('user-role', user.rol, { path: '/' });
+
+  // Redirección desde el servidor
+  const isAdmin = user.rol.toUpperCase().includes('ADMIN');
+  redirect(isAdmin ? '/admin' : '/');
 }
 
 
