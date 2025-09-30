@@ -29,7 +29,7 @@ export async function loginAction(
 
   let responseData;
   try {
-    const response = await fetch('/api/usuarios/login', {
+    const response = await fetch('/usuarios/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
