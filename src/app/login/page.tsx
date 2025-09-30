@@ -53,12 +53,13 @@ export default function LoginPage() {
 
   useEffect(() => {
     // Muestra un toast si viene de la página de registro
-    if (searchParams.get('registered') === 'true') {
+    const registered = searchParams.get('registered');
+    if (registered === 'true') {
       toast({
         title: "¡Registro Exitoso!",
         description: "Tu cuenta ha sido creada. Ya puedes iniciar sesión.",
       });
-      // Limpia el parámetro de la URL
+      // Limpia el parámetro de la URL para no volver a mostrarlo
       router.replace('/login', {scroll: false});
     }
   }, [searchParams, toast, router]);
