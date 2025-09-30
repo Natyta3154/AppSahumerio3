@@ -17,10 +17,14 @@ function FetchErrorAlert({ error }: { error: string | null }) {
 }
 
 export default async function ProductosPage() {
-  const { products, error } = await getProducts().then(
-    (data) => ({ products: data, error: null }),
-    (e) => ({ products: [], error: e instanceof Error ? e.message : "An unknown error occurred" })
-  );
+  let products;
+  let error: string | null = null;
+  try {
+    products = await getProducts();
+  } catch (e) {
+    products = [];
+    error = e instanceof Error ? e.message : "An unknown error occurred";
+  }
 
   return (
     <div className="container mx-auto px-4 py-12">

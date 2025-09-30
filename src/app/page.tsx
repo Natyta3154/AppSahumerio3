@@ -73,7 +73,9 @@ function FetchErrorAlert({ error }: { error: string }) {
             <AlertTriangle className="h-4 w-4" />
             <AlertTitle>Error al Cargar Productos</AlertTitle>
             <AlertDescription>
-                No pudimos cargar los productos en este momento. Error: {error}
+                No pudimos cargar los productos en este momento. Esto puede deberse a un problema de red o de configuración del servidor (CORS).
+                <br />
+                <strong>Detalle:</strong> {error}
             </AlertDescription>
         </Alert>
     );
@@ -92,6 +94,7 @@ export default function HomePage() {
     async function loadProducts() {
       try {
         setLoading(true);
+        setError(null);
         const products = await getProducts();
         setAllProducts(products);
       } catch (e) {
@@ -148,7 +151,7 @@ export default function HomePage() {
           </div>
           {loading ? (
              <div className="flex justify-center"><ProductsLoadingSkeleton/></div>
-          ) : error && offerProducts.length === 0 ? (
+          ) : error ? (
               <FetchErrorAlert error={error} />
           ) : offerProducts.length > 0 ? (
             <div className="flex justify-center">
@@ -184,7 +187,7 @@ export default function HomePage() {
           <h2 className="text-3xl font-headline font-bold mb-8 text-center border-b-2 border-primary/20 pb-4">Productos Premium</h2>
           {loading ? (
             <ProductsLoadingSkeleton />
-          ) : error && featuredProducts.length === 0 ? (
+          ) : error ? (
             <FetchErrorAlert error={error} />
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">

@@ -29,10 +29,14 @@ function FetchErrorAlert({ error }: { error: string | null }) {
 }
 
 export default async function OfertasPage() {
-  const { products: allProducts, error } = await getProducts().then(
-    (data) => ({ products: data, error: null }),
-    (e) => ({ products: [], error: e instanceof Error ? e.message : "An unknown error occurred" })
-  );
+  let allProducts: Product[] = [];
+  let error: string | null = null;
+
+  try {
+    allProducts = await getProducts();
+  } catch (e) {
+    error = e instanceof Error ? e.message : "An unknown error occurred";
+  }
   
   const offerProducts = allProducts.filter(product => getActiveOffer(product));
 

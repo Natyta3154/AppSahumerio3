@@ -1,4 +1,3 @@
-
 export type Offer = {
   idOferta: number;
   valorDescuento: number;
@@ -49,12 +48,19 @@ export async function getProducts(): Promise<Product[]> {
 
 export async function getProductById(id: string): Promise<Product | null> {
   try {
-    // The API seems to list all products, so we fetch all and find by id
-    const products = await getProducts();
-    const product = products.find((p) => p.id.toString() === id);
-    return product || null;
+    const res = await fetch(`https://apisahumerios.onrender.com/productos/detalle/${id}`, {
+      cache: 'no-store',
+    });
+    if (!res.ok) {
+      if (res.status === 404) {
+        return null;
+      }
+      throw new Error(`Failed to fetch product: ${res.status} ${res.statusText}`);
+    }
+    const product = await res.json();
+    return product;
   } catch (error) {
-    console.error(`Error fetching product by id ${id}:`, error);
+    console.error(`Error fetching product with id ${id}:`, error);
     throw error;
   }
 }
