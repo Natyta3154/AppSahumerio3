@@ -64,7 +64,7 @@ export default function LoginPage() {
   }, [searchParams, toast, router]);
 
   useEffect(() => {
-    if (state.success) {
+    if (state.success && state.user) {
       // Guardar cookies del lado del cliente para la UI
       setCookie('user-name', state.user.nombre, { path: '/' });
       setCookie('user-email', state.user.email, { path: '/' });
