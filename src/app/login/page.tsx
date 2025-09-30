@@ -17,18 +17,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
-import { loginAction } from './actions';
+import { loginAction, type LoginFormState } from './actions';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Terminal, Loader2, Eye, EyeOff } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { getCookie } from 'cookies-next';
+import { setCookie } from 'cookies-next';
 
-export type FormState = {
-  message: string;
-  success?: boolean;
-};
-
-const initialState: FormState = {
+const initialState: LoginFormState = {
   message: '',
   success: false,
 };
@@ -57,33 +52,34 @@ export default function LoginPage() {
   const router = useRouter();
 
   useEffect(() => {
+    // Muestra un toast si viene de la página de registro
     if (searchParams.get('registered') === 'true') {
       toast({
         title: "¡Registro Exitoso!",
         description: "Tu cuenta ha sido creada. Ya puedes iniciar sesión.",
       });
-      // Remove the query param from URL
+      // Limpia el parámetro de la URL
       router.replace('/login', {scroll: false});
     }
-
-    const justLoggedIn = searchParams.get('loggedin') === 'true';
-    const userName = getCookie('user-name');
-    if (justLoggedIn && userName) {
-       toast({
-        title: `¡Bienvenido, ${userName}!`,
-        description: 'Has iniciado sesión correctamente.',
-      });
-      router.replace(searchParams.get('from') || '/', {scroll: false});
-    }
-
   }, [searchParams, toast, router]);
 
   useEffect(() => {
-    // This effect handles the outcome of the form submission.
-    // Since the action now redirects, a successful state change might not be seen here
-    // before the redirect happens. We keep the error handling.
-    if (state.message && !state.success) {
-      // Error is displayed via the Alert component.
+    if (state.success) {
+      // Guardar cookies del lado del cliente para la UI
+      setCookie('user-name', state.user.nombre, { path: '/' });
+      setCookie('user-email', state.user.email, { path: '/' });
+      setCookie('user-role', state.user.rol, { path: '/' });
+
+      // Mostrar toast de bienvenida
+      toast({
+        title: `¡Bienvenido, ${state.user.nombre}!`,
+        description: 'Has iniciado sesión correctamente.',
+      });
+
+      // Redirigir
+      const redirectUrl = state.user.rol?.toUpperCase().includes('ADMIN') ? '/admin' : '/productos';
+      router.push(redirectUrl);
+      router.refresh(); // Importante para que el header se actualice
     }
   }, [state, toast, router]);
 

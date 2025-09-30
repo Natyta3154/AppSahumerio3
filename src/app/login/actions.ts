@@ -3,12 +3,28 @@
 
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-import type { FormState } from './page';
+
+export type LoginSuccessState = {
+  success: true;
+  message: string;
+  user: {
+    nombre: string;
+    email: string;
+    rol: string;
+  };
+};
+
+export type LoginErrorState = {
+  success: false;
+  message: string;
+};
+
+export type LoginFormState = LoginSuccessState | LoginErrorState;
 
 export async function loginAction(
-  prevState: FormState,
+  prevState: LoginFormState,
   formData: FormData
-): Promise<FormState> {
+): Promise<LoginFormState> {
   const email = formData.get('email');
   const password = formData.get('password');
 
@@ -16,7 +32,6 @@ export async function loginAction(
     return { message: 'Por favor, introduce el email y la contraseña.', success: false };
   }
 
-  let responseData;
   try {
     const response = await fetch('https://apisahumerios.onrender.com/usuarios/login', {
       method: 'POST',
@@ -26,36 +41,31 @@ export async function loginAction(
       body: JSON.stringify({ email, password }),
     });
 
+    const responseData = await response.json();
+
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({ message: 'Credenciales incorrectas.' }));
-      return { message: errorData.message || 'Error al iniciar sesión. Verifica tus credenciales.', success: false };
+      return { message: responseData.error || 'Error al iniciar sesión. Verifica tus credenciales.', success: false };
     }
 
-    responseData = await response.json();
-    
-    if (responseData.usuario?.rol) {
-      cookies().set('user-role', responseData.usuario.rol, { path: '/' });
-    }
-    if (responseData.usuario?.nombre) {
-      cookies().set('user-name', responseData.usuario.nombre, { path: '/' });
-    }
-    if (responseData.usuario?.email) {
-      cookies().set('user-email', responseData.usuario.email, { path: '/' });
-    }
-    
+    // El backend establece la cookie HttpOnly.
+    // El frontend solo recibe los datos del usuario para la UI.
+    return {
+      success: true,
+      message: 'Inicio de sesión exitoso.',
+      user: responseData.usuario,
+    };
+
   } catch (error) {
     console.error('Login error:', error);
     return { message: 'No se pudo conectar al servidor. Inténtalo más tarde.', success: false };
   }
-  
-  // Redirect after successful login
-  const redirectUrl = responseData.usuario?.rol?.toUpperCase().includes('ADMIN') ? '/admin' : '/productos';
-  redirect(redirectUrl);
 }
+
 
 export async function logoutAction() {
   try {
-     const res = await fetch('https://apisahumerios.onrender.com/usuarios/logout', {
+    // Llama al backend para que borre su cookie HttpOnly
+    const res = await fetch('https://apisahumerios.onrender.com/usuarios/logout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
     });
@@ -64,9 +74,6 @@ export async function logoutAction() {
     }
   } catch (error) {
     console.error("Logout error", error);
-  } finally {
-    cookies().delete('user-role');
-    cookies().delete('user-name');
-    cookies().delete('user-email');
   }
+  // Las cookies del lado del cliente para la UI se borrarán en el componente UserNav
 }

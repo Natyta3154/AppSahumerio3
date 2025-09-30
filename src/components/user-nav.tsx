@@ -2,7 +2,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { getCookie } from 'cookies-next';
+import { getCookie, deleteCookie } from 'cookies-next';
 import Link from 'next/link';
 import {
   DropdownMenu,
@@ -32,11 +32,13 @@ export function UserNav() {
   const router = useRouter();
   
   useEffect(() => {
+    // Este efecto solo se ejecuta en el cliente
     setIsClient(true);
+    
     const name = getCookie('user-name') || null;
     const role = getCookie('user-role') || null;
     
-    if (name) {
+    if (name && typeof name === 'string') {
       const userInitials = name
         .split(' ')
         .map((n) => n[0])
@@ -59,13 +61,24 @@ export function UserNav() {
   }, []);
 
   const handleLogout = async () => {
+    // 1. Llamar al backend para invalidar la cookie HttpOnly
     await logoutAction();
+
+    // 2. Borrar las cookies del lado del cliente
+    deleteCookie('user-name', { path: '/' });
+    deleteCookie('user-email', { path: '/' });
+    deleteCookie('user-role', { path: '/' });
+
+    // 3. Actualizar el estado local
     setUser({ isLoggedIn: false, userName: null, userRole: null, initials: null });
+
+    // 4. Redirigir y refrescar
     router.push('/');
-    router.refresh(); // Forces a refresh to update server-side state if needed
+    router.refresh();
   };
 
-  if (!isClient || !user) {
+  // Muestra un esqueleto de carga hasta que el cliente se hidrate
+  if (!isClient || user === null) {
     return <Skeleton className="h-8 w-8 rounded-full" />;
   }
 
