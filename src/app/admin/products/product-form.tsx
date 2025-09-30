@@ -39,7 +39,7 @@ export function ProductForm({ product, onSuccess, onCancel }: ProductFormProps) 
 
   useEffect(() => {
     if (state.message) {
-      const isError = state.message.toLowerCase().includes('error');
+      const isError = state.message.toLowerCase().includes('error') || state.errors && Object.keys(state.errors).length > 0;
       toast({
         title: isError ? "Error" : "Éxito",
         description: state.message,
@@ -90,7 +90,7 @@ export function ProductForm({ product, onSuccess, onCancel }: ProductFormProps) 
         {state.errors?.categoriaId && <p className="text-sm text-destructive">{state.errors.categoriaId[0]}</p>}
       </div>
       <div className="space-y-1">
-        <Label htmlFor="imagenUrl">URL de Imagen</Label>
+        <Label htmlFor="imagenUrl">URL de Imagen (Opcional)</Label>
         <Input id="imagenUrl" name="imagenUrl" defaultValue={product?.imagenUrl ?? ''} placeholder="https://example.com/image.jpg" />
         {state.errors?.imagenUrl && <p className="text-sm text-destructive">{state.errors.imagenUrl[0]}</p>}
       </div>

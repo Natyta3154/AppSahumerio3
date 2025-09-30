@@ -1,4 +1,3 @@
-
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
@@ -10,16 +9,16 @@ export function middleware(request: NextRequest) {
   const isAdminRoute = pathname.startsWith('/admin');
   const isAuthRoute = pathname.startsWith('/login') || pathname.startsWith('/register');
   const isProfileRoute = pathname.startsWith('/profile');
+  const isAdmin = userRole?.toUpperCase().includes('ADMIN');
 
   // 1. Redirect authenticated users from auth routes
   if (isLoggedIn && isAuthRoute) {
-    const isAdmin = userRole?.toUpperCase().includes('ADMIN');
     const redirectUrl = isAdmin ? '/admin' : '/';
     return NextResponse.redirect(new URL(redirectUrl, request.url));
   }
   
-  // 2. Protect admin routes
-  if (isAdminRoute && (!isLoggedIn || !userRole?.toUpperCase().includes('ADMIN'))) {
+  // 2. Protect admin routes for non-admins or unauthenticated users
+  if (isAdminRoute && !isAdmin) {
     return NextResponse.redirect(new URL('/login', request.url));
   }
   

@@ -1,8 +1,8 @@
-
 'use server';
 
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
+import { cookies } from 'next/headers';
 
 const API_BASE_URL = 'https://apisahumerios.onrender.com';
 
@@ -28,22 +28,29 @@ export type FormState = {
   };
 };
 
-// Generic API fetch function
 async function apiRequest(url: string, options: RequestInit) {
-  const response = await fetch(url, options);
+  const token = cookies().get('token')?.value;
+  
+  const headers = new Headers(options.headers);
+  if (token) {
+    headers.set('Authorization', `Bearer ${token}`);
+  }
+
+  const response = await fetch(url, { ...options, headers });
+
   if (!response.ok) {
     const errorBody = await response.json().catch(() => ({ message: 'Error en la operación en el servidor.' }));
-    throw new Error(errorBody.message || 'Ocurrió un error inesperado.');
+    console.error("API Request Error:", errorBody);
+    throw new Error(errorBody.message || `Error: ${response.status} ${response.statusText}`);
   }
-  // No todos los endpoints devuelven JSON, ej: DELETE
+  
   const contentType = response.headers.get('content-type');
   if (contentType && contentType.includes('application/json')) {
       return response.json();
   }
-  return {}; // Devuelve un objeto vacío si no hay JSON
+  return {}; 
 }
 
-// Create or Edit Product Action
 export async function upsertProductAction(prevState: FormState, formData: FormData): Promise<FormState> {
   const validatedFields = ProductSchema.safeParse({
     id: formData.get('id') as string,
@@ -52,7 +59,7 @@ export async function upsertProductAction(prevState: FormState, formData: FormDa
     precio: formData.get('precio'),
     stock: formData.get('stock'),
     categoriaId: formData.get('categoriaId'),
-    imagenUrl: formData.get('imagenUrl') || 'https://picsum.photos/seed/placeholder/400/400',
+    imagenUrl: formData.get('imagenUrl') || `https://picsum.photos/seed/${Math.random()}/400/400`,
   });
 
   if (!validatedFields.success) {
@@ -69,59 +76,39 @@ export async function upsertProductAction(prevState: FormState, formData: FormDa
     ? `${API_BASE_URL}/productos/editar/${id}`
     : `${API_BASE_URL}/productos/agregar`;
 
-  const bodyForApi = {
-      ...productData,
-      categoria: { id: productData.categoriaId },
-      precioMayorista: 0, 
-      activo: true,
-  };
-  
-  if (isEditing) {
-      // El endpoint de editar puede tener una estructura de DTO diferente.
-      // Ajustamos el cuerpo para que coincida con lo esperado por el backend.
-      const { categoriaId, ...updateDto } = productData;
-      (updateDto as any).idCategoria = categoriaId;
-       try {
-        await apiRequest(url, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(updateDto),
-        });
-      } catch (error) {
-        return { 
-            message: `Error al actualizar: ${error instanceof Error ? error.message : 'Error desconocido'}`,
-            errors: {} 
+  const method = isEditing ? 'PUT' : 'POST';
+
+  try {
+    let bodyForApi;
+    if (isEditing) {
+        const { categoriaId, ...updateDto } = productData;
+        bodyForApi = { ...updateDto, idCategoria: categoriaId };
+    } else {
+        const createDto = {
+            ...productData,
+            categoriaNombre: productData.categoriaId === 1 ? 'Incienso' : 'Quemador',
+            precioMayorista: 0,
+            activo: true,
         };
-      }
-  } else {
-      // Cuerpo para crear
-      const createDto = {
-        ...productData,
-        categoriaNombre: productData.categoriaId === 1 ? 'Incienso' : 'Quemador',
-        precioMayorista: 0, 
-        activo: true,
-      };
-      try {
-        await apiRequest(url, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(createDto),
-        });
-      } catch (error) {
-        return { 
-            message: `Error al crear: ${error instanceof Error ? error.message : 'Error desconocido'}`,
-            errors: {} 
-        };
-      }
+        bodyForApi = createDto;
+    }
+
+    await apiRequest(url, {
+      method,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(bodyForApi),
+    });
+
+    revalidatePath('/admin/products');
+    return { message: `Producto ${isEditing ? 'actualizado' : 'creado'} con éxito.`, errors: {} };
+
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Error desconocido al procesar el producto.';
+    console.error(`Error in upsertProductAction (isEditing: ${isEditing}):`, errorMessage);
+    return { message: errorMessage, errors: {} };
   }
-
-
-  revalidatePath('/admin/products');
-  return { message: `Producto ${isEditing ? 'actualizado' : 'creado'} con éxito.`, errors: {} };
 }
 
-
-// Delete Product Action
 export async function deleteProductAction(productId: number): Promise<{ message: string }> {
     if (!productId) {
         return { message: 'Error: ID de producto inválido.' };
@@ -136,6 +123,8 @@ export async function deleteProductAction(productId: number): Promise<{ message:
         return { message: 'Producto eliminado con éxito.' };
 
     } catch (error) {
-        return { message: `Error al eliminar: ${error instanceof Error ? error.message : 'Error desconocido'}` };
+        const errorMessage = error instanceof Error ? error.message : 'Error desconocido al eliminar.';
+        console.error(`Error deleting product ${productId}:`, errorMessage);
+        return { message: errorMessage };
     }
 }
